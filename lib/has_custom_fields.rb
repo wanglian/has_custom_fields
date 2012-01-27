@@ -99,7 +99,6 @@ module ActiveRecord # :nodoc:
           options[:parent] = self.name
 
           ::Rails.logger.debug("OPTIONS: #{options.inspect}")
-          puts("OPTIONS: #{options.inspect}")
 
           # Init option storage if necessary
           cattr_accessor :custom_field_options
@@ -127,11 +126,13 @@ module ActiveRecord # :nodoc:
               belongs_to options[:fields_relationship_name],
                 :class_name => '::CustomFields::' + options[:fields_class_name].singularize
               alias_method :field, options[:fields_relationship_name]
-              
+
               def self.reloadable? #:nodoc:
                 false
               end
-              
+
+              validates_uniqueness_of options[:foreign_key].to_sym, :scope => "#{options[:fields_relationship_name]}_id".to_sym
+
               def validate
                 field = self.field
                 raise "Couldn't load field" if !field
