@@ -1,6 +1,6 @@
 module CustomFields
   class CustomFieldBase < ActiveRecord::Base
-
+    self.abstract_class = true
     serialize :select_options
     validates_presence_of :name,
       :message => 'Please specify the field name.'
