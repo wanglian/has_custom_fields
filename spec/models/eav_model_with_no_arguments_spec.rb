@@ -1,32 +1,25 @@
 require 'spec_helper'
 
-
-
-describe "ActiveRecord Model annotated with 'has_custom_field_behavior' with no options in declaration" do
+# describe "ActiveRecord Model annotated with 'has_custom_field_behavior' with no options in declaration" do
   
-  before(:all) do
-    class Post < ActiveRecord::Base
-      has_custom_fields
-    end
-    
-    @post = post = Post.create({
-      title: 'Hello World',
-      body: 'This is my first blog post. Great!'
-    })
-    @post.save
-  end
+  # before(:all) do
+  #   class Post < ActiveRecord::Base
+  #     has_custom_fields
+  #   end
+  #   
+  #   @post = post = Post.create({
+  #     title: 'Hello World',
+  #     body: 'This is my first blog post. Great!'
+  #   })
+  #   @post.save
+  # end
+  # 
+  # it "should have many attributes" do
+  #   # post_attr = Post.find_by_title("Hello World").post_attributes
+  #   # post_attr[0].should be_instance_of(PostAttribute)
+  #   # post_attr.size.should == 3
+  # end
   
-  it "should have many attributes" do
-    # post_attr = Post.find_by_title("Hello World").post_attributes
-    # post_attr[0].should be_instance_of(PostAttribute)
-    # post_attr.size.should == 3
-  end
-  
-  
-  
-  
-end
-
 # 
 #   it "should have many attributes" do
 #     post_attr = Post.find_by_title("Hello World").post_attributes
