@@ -1,34 +1,14 @@
-$:.unshift(File.dirname(__FILE__) + '/../lib')
-
-ENV["RAILS_ENV"] ||= "test"
-
 require "rubygems"
-require 'rspec'
-require File.expand_path(File.join(File.dirname(__FILE__), "../../../../config/environment"))
-require 'rspec/rails'
-require 'active_record/fixtures'
+require "rspec"
+require "active_support"
+require "active_record"
 
-begin
-  require 'ruby-debug'
-  Debugger.start
-rescue LoadError
-end
+# Establish DB Connection
+config = YAML::load(IO.read(File.join(File.dirname(__FILE__), 'db', 'database.yml')))
+ActiveRecord::Base.configurations = {'test' => config[ENV['DB'] || 'sqlite3']}
+ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['test'])
 
-require "acts_as_custom_fields"
+# Load Test Schema into the Database
+load(File.dirname(__FILE__) + "/db/schema.rb")
 
-config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
-ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
-ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'mysql'])
-
-plugin_fixture_path = File.expand_path(File.dirname(__FILE__) + "/fixtures/")
-$LOAD_PATH.unshift(plugin_fixture_path)
-
-Spec::Runner.configure do |config|
-  config.use_transactional_fixtures = true
-  config.use_instantiated_fixtures  = false
-  config.fixture_path = plugin_fixture_path
-end
-
-load(File.dirname(__FILE__) + "/schema.rb")
-
-alias :doing :lambda
+require File.dirname(__FILE__) + '/../init'

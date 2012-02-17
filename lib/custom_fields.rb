@@ -1,49 +1,9 @@
-require 'custom_fields/custom_field_base'
-include ::CustomFields
+require "custom_fields/railtie"
+
 
 module ActiveRecord # :nodoc:
   module Has # :nodoc:
-    ##
-    # HasCustomFields allow for the Entity-attribute-value model (EAV), also 
-    # known as object-attribute-value model and open schema on any of your ActiveRecord
-    # models. 
-    #
     module CustomFields
-
-      ALLOWABLE_TYPES = ['select', 'checkbox', 'text', 'date']
-
-      Object.const_set('TagFacade', Class.new(Object)).class_eval do
-        def initialize(object_with_custom_fields, scope, scope_id)
-          @object = object_with_custom_fields
-          @scope = scope
-          @scope_id = scope_id
-        end
-        def [](tag)
-          # puts "** Calling get_custom_field_attribute for #{@object.class},#{tag},#{@scope},#{@scope_id}"
-          return @object.get_custom_field_attribute(tag, @scope, @scope_id)
-        end
-      end
-
-      Object.const_set('ScopeIdFacade', Class.new(Object)).class_eval do
-        def initialize(object_with_custom_fields, scope)
-          @object = object_with_custom_fields
-          @scope = scope
-        end
-        def [](scope_id)
-          # puts "** Returning a TagFacade for #{@object.class},#{@scope},#{scope_id}"
-          return TagFacade.new(@object, @scope, scope_id)
-        end
-      end
-
-      Object.const_set('ScopeFacade', Class.new(Object)).class_eval do
-        def initialize(object_with_custom_fields)
-          @object = object_with_custom_fields
-        end
-        def [](scope)
-          # puts "** Returning a ScopeIdFacade for #{@object.class},#{scope}"
-          return ScopeIdFacade.new(@object, scope)
-        end
-      end
 
       def self.included(base) # :nodoc:
         base.extend ClassMethods
@@ -51,36 +11,6 @@ module ActiveRecord # :nodoc:
 
       module ClassMethods
 
-        ##
-        # Will make the current class have eav behaviour.
-        #
-        # The following options are available on for has_custom_fields to modify
-        # the behavior. Reasonable defaults are provided:
-        #
-        # * <tt>value_class_name</tt>:
-        #   The class for the related model. This defaults to the
-        #   model name prepended to "Attribute". So for a "User" model the class
-        #   name would be "UserAttribute". The class can actually exist (in that
-        #   case the model file will be loaded through Rails dependency system) or
-        #   if it does not exist a basic model will be dynamically defined for you.
-        #   This allows you to implement custom methods on the related class by
-        #   simply defining the class manually.
-        # * <tt>table_name</tt>:
-        #   The table for the related model. This defaults to the
-        #   attribute model's table name.
-        # * <tt>relationship_name</tt>:
-        #   This is the name of the actual has_many
-        #   relationship. Most of the type this relationship will only be used
-        #   indirectly but it is there if the user wants more raw access. This
-        #   defaults to the class name underscored then pluralized finally turned
-        #   into a symbol.
-        # * <tt>foreign_key</tt>:
-        #   The key in the attribute table to relate back to the
-        #   model. This defaults to the model name underscored prepended to "_id"
-        # * <tt>name_field</tt>:
-        #   The field which stores the name of the attribute in the related object
-        # * <tt>value_field</tt>:
-        #   The field that stores the value in the related object
         def has_custom_fields(options = {})
 
           # Provide default options
@@ -97,8 +27,6 @@ module ActiveRecord # :nodoc:
           options[:name_field] ||= 'name'
           options[:value_field] ||= 'value'
           options[:parent] = self.name
-
-          ::Rails.logger.debug("OPTIONS: #{options.inspect}")
 
           # Init option storage if necessary
           cattr_accessor :custom_field_options
@@ -397,5 +325,3 @@ module ActiveRecord # :nodoc:
     end
   end
 end
-
-ActiveRecord::Base.send :include, ActiveRecord::Has::CustomFields
