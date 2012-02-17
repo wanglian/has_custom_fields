@@ -96,7 +96,7 @@ attributes on the Post model.
 
 = Installation
 
-    ./script/plugin install acts_as_custom_field_model
+     rails plugin install git://github.com/kylejginavan/has_custom_fields.git
 
 = RUNNING UNIT TESTS
 
