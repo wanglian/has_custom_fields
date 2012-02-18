@@ -100,6 +100,13 @@ attributes on the Post model.
 
 = RUNNING UNIT TESTS
 
+== Ruby Environment
+
+You should run the unit tests under ruby-1.9.2, a sample .rvmrc would be:
+
+  $ cat .rvmrc
+  rvm ruby-1.9.2@has_custom_fields --create
+
 == Creating the test database
 
 The test databases will be created from the info specified in test/database.yml.
