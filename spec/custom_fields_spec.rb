@@ -1,7 +1,5 @@
 require 'spec_helper'
 
-
-
 describe "Extends active record" do
   
   before(:all) do
@@ -17,8 +15,5 @@ describe "Extends active record" do
     })
     # make a proper assertion but this currently fails if has_custom_fields does not exist...
   end
-  
-  
-  
   
 end
