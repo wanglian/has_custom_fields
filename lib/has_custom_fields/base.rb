@@ -1,5 +1,5 @@
 module CustomFields
-  class CustomFieldBase < ActiveRecord::Base
+  class Base < ActiveRecord::Base
 
     serialize :select_options
     validates_presence_of :name,

@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
     "VERSION",
     "has_custom_fields.gemspec",
     "has_custom_fields.tmproj",
-    "lib/custom_fields/custom_field_base.rb",
+    "lib/has_custom_fields/base.rb",
     "lib/has_custom_fields.rb",
     "spec/database.yml",
     "spec/debug.log",

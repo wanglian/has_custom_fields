@@ -1,6 +1,5 @@
-require 'custom_fields/railtie'
-require 'custom_fields/custom_field_base'
-include ::CustomFields
+require 'has_custom_fields/railtie'
+require 'has_custom_fields/base'
 
 module ActiveRecord # :nodoc:
   module Has # :nodoc:
@@ -99,7 +98,9 @@ module ActiveRecord # :nodoc:
           options[:value_field] ||= 'value'
           options[:parent] = self.name
 
-          ::Rails.logger.debug("OPTIONS: #{options.inspect}")
+          if defined?(::Rails)
+            ::Rails.logger.debug("OPTIONS: #{options.inspect}")
+          end
 
           # Init option storage if necessary
           cattr_accessor :custom_field_options
@@ -113,8 +114,8 @@ module ActiveRecord # :nodoc:
             Object.const_get(options[:values_class_name])
           rescue
             Object.const_set(options[:fields_class_name],
-              Class.new(::CustomFields::CustomFieldBase)).class_eval do
-                set_table_name options[:fields_table_name]
+              Class.new(::CustomFields::Base)).class_eval do
+                self.table_name = options[:fields_table_name]
                 def self.reloadable? #:nodoc:
                   false
                 end
@@ -216,7 +217,7 @@ module ActiveRecord # :nodoc:
             options = custom_field_options[self.name]
             klass = Object.const_get(options[:fields_class_name])
             return if connection.tables.include?(options[:values_table_name])
-
+puts options.inspect
             # todo: get the real pkey type and name
             scope_fkeys = options[:scopes].collect{|s| "#{s.to_s}_id"}
             
