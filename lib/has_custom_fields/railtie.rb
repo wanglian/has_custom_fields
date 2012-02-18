@@ -1,11 +1,13 @@
-module CustomFields
+require 'has_custom_fields'
+
+module HasCustomFields
   if defined?(Rails::Railtie)
     require "rails"
     
     class Railtie < Rails::Railtie
       initializer "has_custom_fields.extend_active_record" do
         ActiveSupport.on_load(:active_record) do
-          CustomFields::Railtie.insert
+          HasCustomFields::Railtie.insert
         end
       end
     end
@@ -13,7 +15,7 @@ module CustomFields
   
   class Railtie
     def self.insert
-      ActiveRecord::Base.send(:include, ActiveRecord::Has::CustomFields)
+      ActiveRecord::Base.send(:include, ActiveRecord::HasCustomFields)
     end
   end
 end

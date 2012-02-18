@@ -2,13 +2,12 @@ require 'has_custom_fields/railtie'
 require 'has_custom_fields/base'
 
 module ActiveRecord # :nodoc:
-  module Has # :nodoc:
-    ##
-    # HasCustomFields allow for the Entity-attribute-value model (EAV), also 
-    # known as object-attribute-value model and open schema on any of your ActiveRecord
-    # models. 
-    #
-    module CustomFields
+  ##
+  # HasCustomFields allow for the Entity-attribute-value model (EAV), also 
+  # known as object-attribute-value model and open schema on any of your ActiveRecord
+  # models. 
+  #
+  module HasCustomFields
 
       ALLOWABLE_TYPES = ['select', 'checkbox', 'text', 'date']
 
@@ -114,19 +113,19 @@ module ActiveRecord # :nodoc:
             Object.const_get(options[:values_class_name])
           rescue
             Object.const_set(options[:fields_class_name],
-              Class.new(::CustomFields::Base)).class_eval do
+              Class.new(::HasCustomFields::Base)).class_eval do
                 self.table_name = options[:fields_table_name]
                 def self.reloadable? #:nodoc:
                   false
                 end
               end
-            ::CustomFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
+            ::HasCustomFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
 
             Object.const_set(options[:values_class_name],
             Class.new(ActiveRecord::Base)).class_eval do
               cattr_accessor :custom_field_options
               belongs_to options[:fields_relationship_name],
-                :class_name => '::CustomFields::' + options[:fields_class_name].singularize
+                :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
               alias_method :field, options[:fields_relationship_name]
 
               def self.reloadable? #:nodoc:
@@ -149,15 +148,15 @@ module ActiveRecord # :nodoc:
                 end
               end
             end
-            ::CustomFields.const_set(options[:values_class_name], Object.const_get(options[:values_class_name]))
+            ::HasCustomFields.const_set(options[:values_class_name], Object.const_get(options[:values_class_name]))
           end
 
           # Store options
           self.custom_field_options[self.name] = options
 
           # Only mix instance methods once
-          unless self.included_modules.include?(ActiveRecord::Has::CustomFields::InstanceMethods)
-            send :include, ActiveRecord::Has::CustomFields::InstanceMethods
+          unless self.included_modules.include?(ActiveRecord::HasCustomFields::InstanceMethods)
+            send :include, ActiveRecord::HasCustomFields::InstanceMethods
           end
 
           # Modify attribute class
@@ -189,9 +188,6 @@ module ActiveRecord # :nodoc:
               alias_method_chain :write_attribute, :custom_field_behavior
             end
           end
-          
-          create_attribute_table
-          
         end
 
         def custom_field_fields(scope, scope_id)
@@ -206,84 +202,6 @@ module ActiveRecord # :nodoc:
 
         def self.included(base) # :nodoc:
           base.extend ClassMethods
-        end
-
-        module ClassMethods
-
-          ##
-          # Rake migration task to create the versioned table using options passed to has_custom_fields
-          #
-          def create_attribute_table(options = {})
-            options = custom_field_options[self.name]
-            klass = Object.const_get(options[:fields_class_name])
-            return if connection.tables.include?(options[:values_table_name])
-puts options.inspect
-            # todo: get the real pkey type and name
-            scope_fkeys = options[:scopes].collect{|s| "#{s.to_s}_id"}
-            
-            ActiveRecord::Base.transaction do
-            
-              self.connection.create_table(options[:fields_table_name], options) do |t|
-                t.string options[:name_field], :null => false, :limit => 63
-                t.string :style, :null => false, :limit => 15
-                t.string :select_options
-                scope_fkeys.each do |s|
-                  t.integer s
-                end
-                t.timestamps
-              end
-              self.connection.add_index options[:fields_table_name], scope_fkeys + [options[:name_field]], :unique => true, 
-                :name => "#{options[:fields_table_name]}_unique_index"
-            
-              # add foreign keys for scoping tables
-              options[:scopes].each do |s|
-                self.connection.execute <<-FOO
-                  alter table #{options[:fields_table_name]}
-                    add foreign key (#{s.to_s}_id)
-                    references
-                    #{eval(s.to_s.classify).table_name}(#{eval(s.to_s.classify).primary_key})
-                FOO
-              end
-              
-              # add xor constraint
-              if !options[:scopes].empty? 
-                self.connection.execute <<-FOO
-                  alter table #{options[:fields_table_name]} add constraint scopes_xor check
-                    (1 = #{options[:scopes].collect{|s| "(#{s.to_s}_id is not null)::integer"}.join(" + ")})
-                FOO
-              end
-              
-              self.connection.create_table(options[:values_table_name], options) do |t|
-                t.integer options[:foreign_key], :null => false
-                t.integer options[:fields_table_name].singularize.foreign_key, :null => false
-                t.string options[:value_field], :null => false
-                t.timestamps
-              end
-              
-              self.connection.add_index options[:values_table_name], options[:foreign_key]
-              self.connection.add_index options[:values_table_name], options[:fields_table_name].singularize.foreign_key
-              
-              self.connection.execute <<-FOO
-                alter table #{options[:values_table_name]} 
-                add foreign key (#{options[:fields_table_name].singularize.foreign_key})
-                references #{options[:fields_table_name]}(#{eval(options[:fields_class_name]).primary_key})
-              FOO
-            end
-          end
-
-          ##
-          # Rake migration task to drop the attribute table
-          #
-          def drop_attribute_table(options = {})
-            options = custom_field_options[self.name]
-            self.connection.drop_table options[:values_table_name]
-          end
-
-          def drop_field_table(options = {})
-            options = custom_field_options[self.name]
-            self.connection.drop_table options[:fields_table_name]
-          end
-
         end
 
         def get_custom_field_attribute(attribute_name, scope, scope_id)
@@ -396,8 +314,7 @@ puts options.inspect
 
       end
 
-    end
   end
 end
 
-ActiveRecord::Base.send :include, ActiveRecord::Has::CustomFields
+ActiveRecord::Base.send :include, ActiveRecord::HasCustomFields

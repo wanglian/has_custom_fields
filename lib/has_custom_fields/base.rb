@@ -1,4 +1,4 @@
-module CustomFields
+module HasCustomFields
   class Base < ActiveRecord::Base
 
     serialize :select_options

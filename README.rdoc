@@ -1,5 +1,33 @@
 HasCustomFields
-==============
+========================
+
+
+Installation
+------------------------
+
+In your Gemfile:
+
+  gem "has_custom_fields"
+
+Do a bundle install, then for each model you want to have custom fields (say User) do
+the following:
+
+  $ rails generate has_custom_fields_generator User
+
+Then check and run the generated migration
+
+  $ rake db:migrate
+
+Then add the has_custom_fields class method to your model:
+
+  class User < ActiveRecord::Base
+    has_custom_fields
+  end
+
+
+Description
+-------------------------  
+
 
 HasCustomFields allow for the Entity-attribute-value model (EAV), also 
 known as object-attribute-value model and open schema on any of your ActiveRecord
@@ -93,10 +121,6 @@ Will make the current class have eav behaviour.
 
 The above example should work even though "intro" and "teaser" are not
 attributes on the Post model.
-
-= Installation
-
-     rails plugin install git://github.com/kylejginavan/has_custom_fields.git
 
 = RUNNING UNIT TESTS
 
