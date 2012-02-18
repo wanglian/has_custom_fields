@@ -1,13 +1,7 @@
 require 'spec_helper'
 
 describe "Extends active record" do
-  
-  before(:all) do
-    class Post < ActiveRecord::Base
-      has_custom_fields
-    end
-  end
-  
+
   it "should have many attributes" do
     post = Post.create({
       title: 'Hello World',

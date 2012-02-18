@@ -51,8 +51,9 @@ Gem::Specification.new do |s|
   s.summary = %q{The easy way to add custom fields to any Rails model.}
 
   s.add_dependency(%q<builder>, [">= 0"])
-  s.add_dependency('activerecord', ['>= 3.0.0'])
+  s.add_dependency('activerecord', ['>= 3.1.0'])
   s.add_development_dependency('rspec')
+  s.add_development_dependency('database_cleaner')
   s.add_development_dependency('sqlite3')
 end
 

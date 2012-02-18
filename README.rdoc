@@ -25,6 +25,8 @@ Then add the has_custom_fields class method to your model:
   end
 
 
+
+
 Description
 -------------------------  
 

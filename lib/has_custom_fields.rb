@@ -286,7 +286,7 @@ module ActiveRecord # :nodoc:
           return value_object.value
         end
 
-       ##
+        ##
         # Overrides ActiveRecord::Base#write_attribute
         #
         def write_attribute_with_custom_field_behavior(attribute_name, value, scope = nil, scope_id = nil)
