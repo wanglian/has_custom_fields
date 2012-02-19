@@ -2,6 +2,8 @@ require "active_support"
 require "active_record"
 require "database_cleaner"
 
+ENV['debug'] = 'test' unless ENV['debug']
+
 # Establish DB Connection
 config = YAML::load(IO.read(File.join(File.dirname(__FILE__), 'db', 'database.yml')))
 ActiveRecord::Base.configurations = {'test' => config[ENV['DB'] || 'sqlite3']}

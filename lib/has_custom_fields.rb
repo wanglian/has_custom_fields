@@ -9,6 +9,8 @@ module ActiveRecord # :nodoc:
   #
   module HasCustomFields
 
+      class InvalidScopeError < ActiveRecord::RecordNotFound; end
+
       ALLOWABLE_TYPES = ['select', 'checkbox', 'text', 'date']
 
       Object.const_set('TagFacade', Class.new(Object)).class_eval do
@@ -97,9 +99,7 @@ module ActiveRecord # :nodoc:
           options[:value_field] ||= 'value'
           options[:parent] = self.name
 
-          if defined?(::Rails)
-            ::Rails.logger.debug("OPTIONS: #{options.inspect}")
-          end
+          HasCustomFields.log(:debug, "OPTIONS: #{options.inspect}")
 
           # Init option storage if necessary
           cattr_accessor :custom_field_options
@@ -193,7 +193,24 @@ module ActiveRecord # :nodoc:
         def custom_field_fields(scope, scope_id)
           options = custom_field_options[self.name]
           klass = Object.const_get(options[:fields_class_name])
-          return klass.send("find_all_by_#{scope}_id", scope_id, :order => :id)
+          begin
+            return klass.send("find_all_by_#{scope}_id", scope_id, :order => :id)
+          rescue NoMethodError
+            parent_class = klass.to_s.sub('Field', '')
+            raise InvalidScopeError, "Class #{parent_class} does not have scope :#{scope} defined for has_custom_fields"
+          end
+        end
+
+        private
+
+        def HasCustomFields.log(level, message)
+          if defined?(::Rails)
+            ::Rails.logger.send(level, message)
+          else
+            if ENV['debug'] == 'debug'
+              STDOUT.puts("HasCustomFields #{level}, #{message}")
+            end
+          end
         end
         
       end
@@ -246,7 +263,7 @@ module ActiveRecord # :nodoc:
         end
 
         def get_value_object(attribute_name, scope, scope_id)
-          ::Rails.logger.debug("scope/id is: #{scope}/#{scope_id}")
+          HasCustomFields.log(:debug, "scope/id is: #{scope}/#{scope_id}")
           options = custom_field_options[self.class.name]
           model_fkey = options[:foreign_key].singularize
           fields_class = options[:fields_class_name]
@@ -255,12 +272,14 @@ module ActiveRecord # :nodoc:
           fields_fkey = options[:fields_table_name].singularize.foreign_key
           fields = Object.const_get(fields_class)
           values = Object.const_get(values_class)
-          ::Rails.logger.debug("fkey is: #{fields_fkey}")
-          ::Rails.logger.debug("fields class: #{fields.to_s}")
-          ::Rails.logger.debug("values class: #{values.to_s}")
+          HasCustomFields.log(:debug, "fkey is: #{fields_fkey}")
+          HasCustomFields.log(:debug, "fields class: #{fields.to_s}")
+          HasCustomFields.log(:debug, "values class: #{values.to_s}")
           f = fields.send("find_by_name_and_#{scope}_id", attribute_name, scope_id)
-          raise "No field #{attribute_name} for #{scope} #{scope_id}" if f.nil?
-          ::Rails.logger.debug("field: #{f.inspect}")
+          
+          raise(ActiveRecord::RecordNotFound, "No field #{attribute_name} for #{scope} #{scope_id}") if f.nil?
+
+          HasCustomFields.log(:debug, "field: #{f.inspect}")
           field_id = f.id
           model_id = self.id
           value_object = values.send("find_by_#{model_fkey}_and_#{fields_fkey}", model_id, field_id)
@@ -280,7 +299,7 @@ module ActiveRecord # :nodoc:
           value_object = get_value_object(attribute_name, scope, scope_id)
           case value_object.field.style
           when "date"
-            ::Rails.logger.debug("reading date object: #{value_object.value}")
+            HasCustomFields.log(:debug, "reading date object: #{value_object.value}")
             return Date.parse(value_object.value) if value_object.value
           end
           return value_object.value
@@ -292,11 +311,11 @@ module ActiveRecord # :nodoc:
         def write_attribute_with_custom_field_behavior(attribute_name, value, scope = nil, scope_id = nil)
           return write_attribute_without_custom_field_behavior(attribute_name, value) if scope.nil?
 
-          ::Rails.logger.debug("attribute_name(#{attribute_name}) value(#{value.inspect}) scope(#{scope}) scope_id(#{scope_id})")
+          HasCustomFields.log(:debug, "attribute_name(#{attribute_name}) value(#{value.inspect}) scope(#{scope}) scope_id(#{scope_id})")
           value_object = get_value_object(attribute_name, scope, scope_id)
           case value_object.field.style
           when "date"
-            ::Rails.logger.debug("date object: #{value["date(1i)"].to_i}, #{value["date(2i)"].to_i}, #{value["date(3i)"].to_i}")
+            HasCustomFields.log(:debug, "date object: #{value["date(1i)"].to_i}, #{value["date(2i)"].to_i}, #{value["date(3i)"].to_i}")
             begin
               new_date = !value["date(1i)"].empty? && !value["date(2i)"].empty? && !value["date(3i)"].empty? ?
                 Date.civil(value["date(1i)"].to_i, value["date(2i)"].to_i, value["date(3i)"].to_i) :
