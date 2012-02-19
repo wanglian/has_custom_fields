@@ -9,7 +9,10 @@ module HasCustomFields
          "  rails generate has_custom_fields_generator Post" +
          "\n"
          
-    argument :scoped_models, :required => false, :type => :array, :desc => "The scopes you are adding to the association",
+    argument :scoped_models,
+             :required => true,
+             :type => :array,
+             :desc => "The scopes you are adding for the fields",
              :banner => "scope1 scope2"
 
     def self.source_root
@@ -35,11 +38,7 @@ module HasCustomFields
     end
 
     def scope_foreign_keys
-      if scoped_models.present?
-        scoped_models.map { |scope| scope.singularize.foreign_key }
-      else
-        []
-      end
+      scoped_models.map { |scope| scope.singularize.foreign_key }
     end
 
     def migration_name
