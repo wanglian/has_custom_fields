@@ -15,14 +15,14 @@ ActiveRecord::Schema.define(:version => 0) do
     t.datetime "updated_at"
   end
     
-  create_table "user_attributes" do |t|
+  create_table "user_attributes", :force => true do |t|
     t.integer  "user_id", :null => false
     t.integer  "user_field_id", :null => false
     t.string   "value", :null => false
     t.timestamps
   end
 
-  create_table "user_fields" do |t|
+  create_table "user_fields", :force => true do |t|
     t.string   "name", :null => false, :limit => 63
     t.string   "style", :null => false, :limit => 15
     t.string   "select_options"

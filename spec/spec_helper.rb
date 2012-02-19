@@ -14,11 +14,8 @@ require File.dirname(__FILE__) + '/../init'
 
 # Load in the test models
 
-require File.dirname(__FILE__) + '/test_models/person'
-require File.dirname(__FILE__) + '/test_models/document'
-require File.dirname(__FILE__) + '/test_models/post'
-require File.dirname(__FILE__) + '/test_models/preference'
-
+require File.dirname(__FILE__) + '/test_models/user'
+require File.dirname(__FILE__) + '/test_models/organization'
 
 RSpec.configure do |config|
 

@@ -1,3 +1,3 @@
-class organization < ActiveRecord::Base
+class Organization < ActiveRecord::Base
   
 end
