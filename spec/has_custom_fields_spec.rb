@@ -6,7 +6,7 @@ describe 'Has Custom Fields' do
   
     describe "class methods" do
 
-      it "returns an empty array if there are no fields" do
+      it "returns an empty array" do
         org = Organization.create!(:name => 'ABC Corp')
         User.custom_field_fields(:organization, org.id).should == []
       end
@@ -34,6 +34,40 @@ describe 'Has Custom Fields' do
         expect {
           @user.custom_fields[:organization][@org.id]['High Potential']
         }.to raise_error(ActiveRecord::RecordNotFound, 'No field High Potential for organization 1')
+      end
+
+    end
+
+  end
+
+
+  context "with fields defined" do
+
+    before(:each) do
+      pending "Need to find out what the accepted way to create fields is"
+      @org = Organization.create!(:name => 'ABC Corp')
+    end
+
+    describe "class methods" do
+
+      it "returns an array of UserFields" do
+        User.custom_field_fields(:organization, @org.id).length.should == 2
+        values = User.custom_field_fields(:organization, @org.id).map(&:name)
+        values.should include?('Customer')
+        values.should include?('Value')
+      end
+
+    end
+
+    describe "instance methods" do
+
+      before(:each) do
+        @user = User.create!(:name => 'Mikel', :organization => @org)
+      end
+
+      it "returns nil if there is no value defined" do
+        @user.custom_fields[:organization][@org.id]['Customer'].should be_nil
+        @user.custom_fields[:organization][@org.id]['Value'].should be_nil
       end
 
     end

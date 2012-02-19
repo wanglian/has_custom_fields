@@ -275,6 +275,10 @@ module ActiveRecord # :nodoc:
           HasCustomFields.log(:debug, "fkey is: #{fields_fkey}")
           HasCustomFields.log(:debug, "fields class: #{fields.to_s}")
           HasCustomFields.log(:debug, "values class: #{values.to_s}")
+          HasCustomFields.log(:debug, "scope is: #{scope}")
+          HasCustomFields.log(:debug, "scope_id is: #{scope_id}")
+          HasCustomFields.log(:debug, "attribute_name is: #{attribute_name}")
+
           f = fields.send("find_by_name_and_#{scope}_id", attribute_name, scope_id)
           
           raise(ActiveRecord::RecordNotFound, "No field #{attribute_name} for #{scope} #{scope_id}") if f.nil?
