@@ -1,92 +1,55 @@
 HasCustomFields
 ========================
 
+HasCustomFields provides you with a way to have multiple scoped dynamic key value,
+attribute stores persisted in the database for any given model.  These are also
+known as the Entity-Attribute-Value model (EAV).
+
 
 Installation
 ------------------------
 
 In your Gemfile:
 
-  gem "has_custom_fields"
+    gem "has_custom_fields"
 
 Do a bundle install, then for each model you want to have custom fields (say User) do
 the following:
 
-  $ rails generate has_custom_fields_generator User
+    $ rails generate has_custom_fields_generator User
 
 Then check and run the generated migration
 
-  $ rake db:migrate
+    $ rake db:migrate
 
 Then add the has_custom_fields class method to your model:
 
-  class User < ActiveRecord::Base
-    has_custom_fields
-  end
-
-
-
+    class User < ActiveRecord::Base
+      has_custom_fields
+    end
 
 Description
 -------------------------  
 
+### What is Entity-attribute-value model?
 
-HasCustomFields allow for the Entity-attribute-value model (EAV), also 
-known as object-attribute-value model and open schema on any of your ActiveRecord
-models. 
-
-= What is Entity-attribute-value model?
 Entity-attribute-value model (EAV) is a data model that is used in circumstances 
 where the number of attributes (properties, parameters) that can be used to describe 
 a thing (an "entity" or "object") is potentially very vast, but the number that will 
 actually apply to a given entity is relatively modest.
 
-= Typical Problem
-A good example of this is where you need to store
-lots (possible hundreds) of optional attributes on an object. My typical
-reference example is when you have a User object. You want to store the
-user's preferences between sessions. Every search, sort, etc in your
-application you want to keep track of so when the user visits that section
-of the application again you can simply restore the display to how it was.
 
-So your controller might have:
+### Typical Problem
 
-  Project.find :all, :conditions => current_user.project_search,
-    :order => current_user.project_order
+Say you have a contact management system, and each person in the database belongs
+to an organisation.  That organization may have a bunch of values that need to be
+stored in the database, such as, primary contact name, or hot prospect?
 
-But there could be hundreds of these little attributes that you really don't
-want to store directly on the user object. It would make your table have too
-many columns so it would be too much of a pain to deal with. Also there might
-be performance problems. So instead you might do something like
-this:
+Each of these could be stored as column values on the organization table, but
+you could have 10-20 of these, and adding a new one would require a database change.
 
-  class User < ActiveRecord::Base
-    has_many :preferences
-  end
-
-  class Preferences < ActiveRecord::Base
-    belongs_to :user
-  end
-
-Now simply give the Preference model a "name" and "value" column and you are
-set..... except this is now too complicated. To retrieve a attribute you will
-need to do something like:
-
-  Project.find :all,
-    :conditions => current_user.preferences.find_by_name('project_search').value,
-    :order => current_user.preferences.find_by_name('project_order').value
-
-Sure you could fix this through a few methods on your model. But what about
-saving?
-
-  current_user.preferences.create :name => 'project_search',
-    :value => "lastname LIKE 'jones%'"
-  current_user.preferences.create :name => 'project_order',
-    :value => "name"
-
-Again this seems to much. Again we could add some methods to our model to
-make this simpler but do we want to do this on every model. NO! So instead
-we use this plugin which does everything for us.
+HasCustomFields allows you to define these key values simply with an attribute
+type.
 
 = Capabilities
 
