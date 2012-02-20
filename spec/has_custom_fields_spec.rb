@@ -56,7 +56,7 @@ describe 'Has Custom Fields' do
     before(:each) do
       @org = Organization.create!(:name => 'ABC Corp')
       UserField.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
-      UserField.create!(:organization_id => @org.id, :name => 'Customer', :style => 'text')
+      UserField.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
     end
 
     describe "class methods" do
@@ -79,6 +79,34 @@ describe 'Has Custom Fields' do
       it "returns nil if there is no value defined" do
         @user.custom_fields[:organization][@org.id]['Customer'].should be_nil
         @user.custom_fields[:organization][@org.id]['Value'].should be_nil
+      end
+
+      it "sets the value of the field and persists it in the database" do
+        expect {
+          @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '10000', 'Customer' => '1'}}})
+          @user.custom_fields[:organization][@org.id]['Customer'].should == '1'
+          @user.custom_fields[:organization][@org.id]['Value'].should == '10000'
+        }.to change(UserAttribute, :count).by(2)
+      end
+
+      it "does not persist in the database if the value is nil or blank" do
+        expect {
+          @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})
+          @user.custom_fields[:organization][@org.id]['Customer'].should be_nil
+          @user.custom_fields[:organization][@org.id]['Value'].should be_nil
+        }.to change(UserAttribute, :count).by(0)
+      end
+
+      it "deletes the value from the database if the value is nil or blank" do
+        @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})
+        @user.custom_fields[:organization][@org.id]['Customer'].should be_nil
+        @user.custom_fields[:organization][@org.id]['Value'].should be_nil
+
+        expect {
+          @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})
+          @user.custom_fields[:organization][@org.id]['Customer'].should be_nil
+          @user.custom_fields[:organization][@org.id]['Value'].should be_nil
+        }.to change(UserAttribute, :count).by(-2)
       end
 
     end
