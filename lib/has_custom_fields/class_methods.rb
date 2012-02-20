@@ -121,6 +121,7 @@ module HasCustomFields
 
       # Modify main class
       class_eval do
+        attr_accessible :custom_fields
         has_many options[:relationship_name],
           :class_name => options[:values_class_name],
           :table_name => options[:values_table_name],

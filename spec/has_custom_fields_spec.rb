@@ -40,7 +40,7 @@ describe 'Has Custom Fields' do
 
   end
 
-  context "creating fields" do
+  describe "creating fields" do
 
     it "creates the fields" do
       @org = Organization.create!(:name => 'ABC Corp')
@@ -74,6 +74,14 @@ describe 'Has Custom Fields' do
 
       before(:each) do
         @user = User.create!(:name => 'Mikel', :organization => @org)
+      end
+
+      it "sets attributes accessible on the custom_fields virtual attribute" do
+        @user.update_attributes(:name => 'Mikel', :email => 'mikel@example.org',
+                                :custom_fields => {:organization => {@org.id => {'Value' => '10000'}}})
+        @user.name.should == 'Mikel'
+        @user.email.should == 'mikel@example.org'
+        @user.custom_fields[:organization][@org.id]['Value'].should_not be_nil
       end
 
       it "returns nil if there is no value defined" do
