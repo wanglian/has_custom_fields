@@ -1,5 +1,6 @@
 module HasCustomFields
   module ClassMethods
+
     ##
     # Will make the current class have eav behaviour.
     #
@@ -66,6 +67,11 @@ module HasCustomFields
             def self.reloadable? #:nodoc:
               false
             end
+
+            scopes = options[:scopes].map { |f| f.to_s.foreign_key }
+            validates_uniqueness_of :name, :scope => scopes, :message => 'The field name is already taken.'
+
+            validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(', ')}."
           end
         ::HasCustomFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
 
@@ -157,6 +163,5 @@ module HasCustomFields
         end
       end
     end
-    
   end
 end
