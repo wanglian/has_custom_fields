@@ -1,7 +1,15 @@
 require 'has_custom_fields'
 
 module HasCustomFields
-  if defined?(Rails::Railtie)
+  
+  class Railtie
+    def self.insert
+      ActiveRecord::Base.extend HasCustomFields::ClassMethods
+      ActiveRecord::Base.send :include, HasCustomFields::InstanceMethods
+    end
+  end
+
+  if defined?(::Rails::Railtie)
     require "rails"
     
     class Railtie < Rails::Railtie
@@ -11,11 +19,7 @@ module HasCustomFields
         end
       end
     end
-  end
-  
-  class Railtie
-    def self.insert
-      ActiveRecord::Base.send(:include, ActiveRecord::HasCustomFields)
-    end
+  else
+    Railtie.insert
   end
 end

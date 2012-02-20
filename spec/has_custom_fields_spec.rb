@@ -40,6 +40,17 @@ describe 'Has Custom Fields' do
 
   end
 
+  context "creating fields" do
+
+    it "creates the fields" do
+      @org = Organization.create!(:name => 'ABC Corp')
+      expect {
+        debugger
+        UserField.create!(:org => @org, :name => 'Value', :style => 'text')
+      }.to change(HasCustomFields::UserField, :count).by(1)
+    end
+
+  end
 
   context "with fields defined" do
 
