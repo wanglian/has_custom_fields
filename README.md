@@ -28,6 +28,9 @@ Then add the has_custom_fields class method to your model:
       has_custom_fields :scopes => [:organization]
     end
 
+For Rails 2.x users please depend on the 0.0.5 version of the gem
+
+
 Description
 -------------------------  
 
