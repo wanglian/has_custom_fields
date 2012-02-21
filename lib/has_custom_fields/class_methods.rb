@@ -33,6 +33,10 @@ module HasCustomFields
     #   The field that stores the value in the related object
     def has_custom_fields(options = {})
 
+      unless options[:scopes].respond_to?(:each)
+        raise ArgumentError, 'Must define :scope => [] on the has_custom_fields class method'
+      end
+
       # Provide default options
       options[:fields_class_name] ||= self.name + 'Field'
       options[:fields_table_name] ||= options[:fields_class_name].tableize

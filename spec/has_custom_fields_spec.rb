@@ -6,6 +6,13 @@ describe 'Has Custom Fields' do
   
     describe "class methods" do
 
+      it "raises an error if missing a scope to the has_custom_fields class" do
+        class TestUser < ActiveRecord::Base; end
+        expect {
+          TestUser.send(:has_custom_fields)
+        }.to raise_error(ArgumentError, 'Must define :scope => [] on the has_custom_fields class method')
+      end
+
       it "returns an empty array" do
         org = Organization.create!(:name => 'ABC Corp')
         User.custom_field_fields(:organization, org.id).should == []
