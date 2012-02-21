@@ -2,7 +2,7 @@ require 'has_custom_fields'
 
 module HasCustomFields
   
-  class Railtie
+  class Railtie < Rails::Railtie
     def self.insert
       ActiveRecord::Base.extend HasCustomFields::ClassMethods
       ActiveRecord::Base.send :include, HasCustomFields::InstanceMethods
