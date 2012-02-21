@@ -106,9 +106,7 @@ describe 'Has Custom Fields' do
       end
 
       it "deletes the value from the database if the value is nil or blank" do
-        @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})
-        @user.custom_fields[:organization][@org.id]['Customer'].should be_nil
-        @user.custom_fields[:organization][@org.id]['Value'].should be_nil
+        @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '10000', 'Customer' => '1'}}})
 
         expect {
           @user.update_attributes(:custom_fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})

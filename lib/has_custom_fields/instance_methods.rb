@@ -14,7 +14,8 @@ module HasCustomFields
         scoped_ids.each do |scope_id, attrs|
           attrs.each do |k, v|
             if v.blank?
-              # TODO: Delete any record that exists if value is being set to nil
+              value_object = get_value_object(k, scope, scope_id)
+              value_object.delete
             else
               self.set_custom_field_attribute(k, v, scope, scope_id)
             end
