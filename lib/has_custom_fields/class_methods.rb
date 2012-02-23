@@ -61,54 +61,18 @@ module HasCustomFields
       # Return if already processed.
       return if self.custom_field_options.keys.include? options[:values_class_name]
 
-      # Attempt to load related class. If not create it
+      # Attempt to load ModelField related class. If not create it
+      begin
+        Object.const_get(options[:fields_class_name])
+      rescue
+        HasCustomFields.create_associated_fields_class(options)
+      end
+
+      # Attempt to load ModelAttribute related class. If not create it
       begin
         Object.const_get(options[:values_class_name])
       rescue
-        Object.const_set(options[:fields_class_name],
-          Class.new(::HasCustomFields::Base)).class_eval do
-            self.table_name = options[:fields_table_name]
-            def self.reloadable? #:nodoc:
-              false
-            end
-
-            scopes = options[:scopes].map { |f| f.to_s.foreign_key }
-            validates_uniqueness_of :name, :scope => scopes, :message => 'The field name is already taken.'
-
-            validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(', ')}."
-          end
-        ::HasCustomFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
-
-        Object.const_set(options[:values_class_name],
-        Class.new(ActiveRecord::Base)).class_eval do
-          self.table_name = options[:values_table_name]
-
-          cattr_accessor :custom_field_options
-          belongs_to options[:fields_relationship_name],
-            :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
-          alias_method :field, options[:fields_relationship_name]
-
-          def self.reloadable? #:nodoc:
-            false
-          end
-
-          validates_uniqueness_of options[:foreign_key].to_sym, :scope => "#{options[:fields_relationship_name]}_id".to_sym
-
-          def validate
-            field = self.field
-            raise "Couldn't load field" if !field
-
-            if field.style == "select" && !self.value.blank?
-              # raise self.field.select_options.find{|f| f == self.value}.to_s
-              if field.select_options.find{|f| f == self.value}.nil?
-                raise "Invalid option: #{self.value}.  Should be one of #{field.select_options.join(", ")}"
-                self.errors.add_to_base("Invalid option: #{self.value}.  Should be one of #{field.select_options.join(", ")}")
-                return false
-              end
-            end
-          end
-        end
-        ::HasCustomFields.const_set(options[:values_class_name], Object.const_get(options[:values_class_name]))
+        HasCustomFields.create_associated_values_class(options)
       end
 
       # Store options
@@ -158,6 +122,55 @@ module HasCustomFields
     end
 
     private
+
+    def HasCustomFields.create_associated_values_class(options)
+      Object.const_set(options[:values_class_name],
+      Class.new(ActiveRecord::Base)).class_eval do
+        self.table_name = options[:values_table_name]
+
+        cattr_accessor :custom_field_options
+        belongs_to options[:fields_relationship_name],
+          :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
+        alias_method :field, options[:fields_relationship_name]
+
+        def self.reloadable? #:nodoc:
+          false
+        end
+
+        validates_uniqueness_of options[:foreign_key].to_sym, :scope => "#{options[:fields_relationship_name]}_id".to_sym
+
+        def validate
+          field = self.field
+          raise "Couldn't load field" if !field
+
+          if field.style == "select" && !self.value.blank?
+            # raise self.field.select_options.find{|f| f == self.value}.to_s
+            if field.select_options.find{|f| f == self.value}.nil?
+              raise "Invalid option: #{self.value}.  Should be one of #{field.select_options.join(", ")}"
+              self.errors.add_to_base("Invalid option: #{self.value}.  Should be one of #{field.select_options.join(", ")}")
+              return false
+            end
+          end
+        end
+      end
+      ::HasCustomFields.const_set(options[:values_class_name], Object.const_get(options[:values_class_name]))
+    end
+
+    def HasCustomFields.create_associated_fields_class(options)
+      Object.const_set(options[:fields_class_name],
+        Class.new(::HasCustomFields::Base)).class_eval do
+          self.table_name = options[:fields_table_name]
+          def self.reloadable? #:nodoc:
+            false
+          end
+
+          scopes = options[:scopes].map { |f| f.to_s.foreign_key }
+          validates_uniqueness_of :name, :scope => scopes, :message => 'The field name is already taken.'
+
+          validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(', ')}."
+        end
+      ::HasCustomFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
+    end
 
     def HasCustomFields.log(level, message)
       if defined?(::Rails)
