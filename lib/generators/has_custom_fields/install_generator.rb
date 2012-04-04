@@ -21,6 +21,7 @@ module HasCustomFields
 
     def generate_migration
       migration_template "has_custom_fields_migration.rb.erb", "db/migrate/#{migration_file_name}"
+      migration template "has_custom_field_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
     end
 
     protected
