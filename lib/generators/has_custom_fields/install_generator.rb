@@ -24,6 +24,18 @@ module HasCustomFields
     end
 
     protected
+    
+    def custom_field_class_name
+      "#{name.singularize.capitalize}Field"
+    end
+    
+    def custom_field_relationship_name
+      "#{name.singularize}"
+    end
+    
+    def custom_field_select_options_class_name
+      "#{name.singularize.capitalize}FieldSelectOption"
+    end
 
     def field_table_name
       "#{name.underscore.singularize}_fields"
@@ -31,6 +43,10 @@ module HasCustomFields
 
     def attributes_table_name
       "#{name.underscore.singularize}_attributes"
+    end
+    
+    def select_options_table_name
+      "#{name.underscore.singularize}_field_select_options"
     end
 
     def model_foreign_key
@@ -44,12 +60,24 @@ module HasCustomFields
     def migration_name
       "create_custom_fields_for_#{name.underscore}"
     end
+    
+    def select_options_migration_name
+      "create_custom_field_select_options_for_#{name.underscore}"
+    end
 
     def migration_file_name
       "#{migration_name}.rb"
     end
+    
+    def select_options_migration_file_name
+      "#{select_options_migration_name}.rb"
+    end
 
     def migration_class_name
+      migration_name.camelize
+    end
+    
+    def select_options_migration_class_name
       migration_name.camelize
     end
 

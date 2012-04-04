@@ -64,15 +64,35 @@ describe 'Has Custom Fields' do
       @org = Organization.create!(:name => 'ABC Corp')
       UserField.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
       UserField.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
+      UserField.create!(:organization_id => @org.id, :name => 'Category', :style => 'select',
+                        :user_field_select_options => [UserFieldSelectOption.create!(:option => 'CatA'),
+                                           UserFieldSelectOption.create!(:option => 'CatB'),
+                                           UserFieldSelectOption.create!(:option => 'CatC')])
     end
 
     describe "class methods" do
 
       it "returns an array of UserFields" do
-        User.custom_field_fields(:organization, @org.id).length.should == 2
+        User.custom_field_fields(:organization, @org.id).length.should == 3
         values = User.custom_field_fields(:organization, @org.id).map(&:name)
         values.should include('Customer')
         values.should include('Value')
+        values.should include('Category')
+      end
+      
+      it "returns an array of select options" do
+        select_options = User.custom_field_fields(:organization, @org.id).last.user_field_select_options.map(&:option)
+        select_options.should == ["CatA","CatB","CatC"]
+      end
+      
+      it "should return a comma seperated list of options" do
+        select_options = User.custom_field_fields(:organization, @org.id).last.select_options_data
+        select_options.should == "CatA,CatB,CatC"
+      end
+      
+      it "should set up the has_many and belongs_to relationships" do
+        User.custom_field_fields(:organization, @org.id).first.respond_to?(:user_field_select_options).should == true
+        User.custom_field_fields(:organization, @org.id).last.user_field_select_options.first.respond_to?(:user_field).should == true
       end
 
     end

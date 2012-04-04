@@ -1,15 +1,14 @@
 module HasCustomFields
   class Base < ActiveRecord::Base
     self.abstract_class = true
-    serialize :select_options
     validates_presence_of :name,
       :message => 'Please specify the field name.'
     validates_presence_of :select_options_data,
       :if => "self.style.to_sym == :select",
-      :message => "You must enter options for the selection, separated by commas."
+      :message => "You must enter options for the selection"
 
     def select_options_data
-      (self.select_options || []).join(",")
+      (self.user_field_select_options.collect{|o| o.option } || []).join(",")
     end
 
     def select_options_data=(data)
