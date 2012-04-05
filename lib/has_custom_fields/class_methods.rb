@@ -142,7 +142,7 @@ module HasCustomFields
         cattr_accessor :custom_field_options
         belongs_to options[:fields_relationship_name],
           :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
-        has_many :custom_field_select_options
+        
         alias_method :field, options[:fields_relationship_name]
         
 
@@ -174,6 +174,7 @@ module HasCustomFields
         Class.new(::HasCustomFields::Base)).class_eval do
           self.table_name = options[:fields_table_name]
           has_many options[:select_options_relationship_name]
+          alias_method :related_select_options, options[:select_options_relationship_name]
           def self.reloadable? #:nodoc:
             false
           end

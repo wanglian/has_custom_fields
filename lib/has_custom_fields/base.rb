@@ -8,7 +8,7 @@ module HasCustomFields
       :message => "You must enter options for the selection"
 
     def select_options_data
-      (self.user_field_select_options.collect{|o| o.option } || []).join(",")
+      (self.related_select_options.collect{|o| o.option } || [])
     end
 
     def select_options_data=(data)

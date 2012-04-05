@@ -85,9 +85,9 @@ describe 'Has Custom Fields' do
         select_options.should == ["CatA","CatB","CatC"]
       end
       
-      it "should return a comma seperated list of options" do
+      it "should return an array of select options" do
         select_options = User.custom_field_fields(:organization, @org.id).last.select_options_data
-        select_options.should == "CatA,CatB,CatC"
+        select_options.should == ["CatA","CatB","CatC"]
       end
       
       it "should set up the has_many and belongs_to relationships" do
