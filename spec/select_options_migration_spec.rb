@@ -1,5 +1,7 @@
 require 'spec_helper'
-require File.join(File.dirname(__FILE__), "db", "migrations", "has_custom_fields_select_options_migration")
+require File.join(File.dirname(__FILE__), "db", "migrations", "001_has_custom_fields_select_options_migration")
+require File.join(File.dirname(__FILE__), "db", "migrations", "002_migrate_custom_fields_data")
+require File.join(File.dirname(__FILE__), "db", "migrations", "003_remove_custom_fields_attribute")
 # select options were originally stored in the (table_name)_fields.select_options attribute.
 # this spec is for testing that existing data stored in the select_options attribute is correctly migrated to it's own table
 
@@ -31,18 +33,23 @@ describe 'Has Custom Fields' do
       
     end
     
-    describe "before migration" do
+    describe "migrating down" do
       
       before do
-        CreateCustomFieldSelectOptions.down
+        RemoveCustomFieldsAttribute.down
+        MigrateCustomFieldsData.down
+        CreateCustomFieldSelectOptionsForUser.down
       end
       
       it "stores the select options as an array" do
+        
         User.custom_field_fields(:organization,@org.id).first.select_options.should == "---\n- CatA\n- CatB\n- CatC\n"
       end
       
       after do
-        CreateCustomFieldSelectOptions.up
+        CreateCustomFieldSelectOptionsForUser.up
+        MigrateCustomFieldsData.up
+        RemoveCustomFieldsAttribute.up
       end
       
     end
@@ -50,8 +57,12 @@ describe 'Has Custom Fields' do
     describe "redoing the migration" do
       
       before do
-        CreateCustomFieldSelectOptions.down
-        CreateCustomFieldSelectOptions.up
+        RemoveCustomFieldsAttribute.down
+        MigrateCustomFieldsData.down
+        CreateCustomFieldSelectOptionsForUser.down
+        CreateCustomFieldSelectOptionsForUser.up
+        MigrateCustomFieldsData.up
+        RemoveCustomFieldsAttribute.up
       end
       
       it "stores the select options in the separate user_field_select_options table again" do

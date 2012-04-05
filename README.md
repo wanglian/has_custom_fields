@@ -16,9 +16,9 @@ In your Gemfile:
 Do a bundle install, then for each model you want to have custom fields (say User
 with an organization scope for the fields and attributes) do the following:
 
-    $ rails generate has_custom_fields_generator User organization
+    $ rails generate has_custom_fields:install User organization
 
-Then check and run the generated migration
+Then check and run the generated migrations
 
     $ rake db:migrate
 

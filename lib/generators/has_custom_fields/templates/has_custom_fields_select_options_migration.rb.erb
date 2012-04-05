@@ -1,43 +1,15 @@
 class <%= select_options_migration_name %> < ActiveRecord::Migration
-
-  class <%= custom_field_class_name %> < ActiveRecord::Base
-    serialize :select_options
-    has_many :<%= select_options_table_name %>
-  end
-  class <%= custom_field_select_options_class_name %> < ActiveRecord::Base
-    belongs_to <%= custom_field_relationship_name %>
-  end
   
   def self.up
     create_table(:<%= select_options_table_name %>) do |t|
       t.string :option, :null => false, :limit => 63
-      t.integer <%= model_foreign_key %>
+      t.integer :<%= custom_field_relationship_name %>_id
       t.timestamps
     end
-    add_index :<%= select_options_table_name %>, <%= model_foreign_key %>, :unique => false
-
-    # extract the existing data out of <%= field_table_name %>.select_options and into the new table
-    <%= custom_field_class_name %>.find_each{:batch_size => 500} do |custom_field|
-      custom_field.select_options.each do |option|
-        <%= custom_field_select_options_class_name %>.create!(<%= model_foreign_key %> => custom_field.id, :option => option)
-      end
-    end
-        
-    raise "Data wasn't migrated successfully" unless <%= custom_field_class_name %>.all.collect{|c| c.select_options }.flatten.compact.size == <%= custom_field_select_options_class_name %>.count
-    
-    # drop the old column
-    remove_column <%= field_table_name %>, :select_options
-    
+    add_index :<%= select_options_table_name %>, :<%= custom_field_relationship_name %>_id, :unique => false
   end
 
   def self.down
-    add_column <%= field_table_name %>, :select_options, :string
-    <%= custom_field_class_name %>.reset_column_information
-    # get the data out of <%= select_options_table_name %> and put it back into the <%= field_table_name %>.select_options attribute
-    <%= custom_field_class_name %>.find_each{:batch_size => 500} do |custom_field|
-      custom_field.update_attributes!(:select_options => custom_field.<%= select_options_table_name %>.map(&:option))
-    end
-    
     drop_table(:<%= select_options_table_name %>)
   end
 end

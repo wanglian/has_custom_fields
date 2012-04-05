@@ -21,7 +21,9 @@ module HasCustomFields
 
     def generate_migration
       migration_template "has_custom_fields_migration.rb.erb", "db/migrate/#{migration_file_name}"
-      migration template "has_custom_field_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
+      migration_template "has_custom_fields_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
+      migration_template "migrate_custom_fields_data.rb.erb", "db/migrate/#{data_migration_file_name}"
+      migration_template "remove_custom_fields_attribute.rb.erb", "db/migrate/#{remove_select_options_from_custom_field_migration_file_name}"
     end
 
     protected
@@ -31,7 +33,7 @@ module HasCustomFields
     end
     
     def custom_field_relationship_name
-      "#{name.singularize}"
+      "#{name.underscore.singularize}_field"
     end
     
     def custom_field_select_options_class_name
@@ -63,7 +65,15 @@ module HasCustomFields
     end
     
     def select_options_migration_name
-      "create_custom_field_select_options_for_#{name.underscore}"
+      "CreateCustomFieldSelectOptionsFor#{name.capitalize}"
+    end
+    
+    def data_migration_name
+      "MigrateCustomFieldsData"
+    end
+    
+    def remove_select_options_from_custom_field_migration_name
+      "RemoveCustomFieldsAttribute"
     end
 
     def migration_file_name
@@ -71,7 +81,15 @@ module HasCustomFields
     end
     
     def select_options_migration_file_name
-      "#{select_options_migration_name}.rb"
+      "#{select_options_migration_name.underscore}.rb"
+    end
+    
+    def data_migration_file_name
+      "#{data_migration_name.underscore}.rb"
+    end
+    
+    def remove_select_options_from_custom_field_migration_file_name
+      "#{remove_select_options_from_custom_field_migration_name.underscore}.rb"
     end
 
     def migration_class_name
