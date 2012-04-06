@@ -1,34 +1,37 @@
-$:.unshift(File.dirname(__FILE__) + '/../lib')
+require "active_support"
+require "active_record"
+require "database_cleaner"
 
-ENV["RAILS_ENV"] ||= "test"
+ENV['debug'] = 'test' unless ENV['debug']
 
-require "rubygems"
-require 'spec'
-require File.expand_path(File.join(File.dirname(__FILE__), "../../../../config/environment"))
-require 'spec/rails'
-require 'active_record/fixtures'
+# Establish DB Connection
+config = YAML::load(IO.read(File.join(File.dirname(__FILE__), 'db', 'database.yml')))
+ActiveRecord::Base.configurations = {'test' => config[ENV['DB'] || 'sqlite3']}
+ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['test'])
 
-begin
-  require 'ruby-debug'
-  Debugger.start
-rescue LoadError
+# Load Test Schema into the Database
+load(File.dirname(__FILE__) + "/db/schema.rb")
+
+require File.dirname(__FILE__) + '/../init'
+
+# Load in the test models
+
+require File.dirname(__FILE__) + '/test_models/user'
+require File.dirname(__FILE__) + '/test_models/organization'
+
+RSpec.configure do |config|
+
+  config.before(:suite) do
+    DatabaseCleaner.strategy = :transaction
+    DatabaseCleaner.clean_with(:truncation)
+  end
+
+  config.before(:each) do
+    DatabaseCleaner.start
+  end
+
+  config.after(:each) do
+    DatabaseCleaner.clean
+  end
+
 end
-
-require "acts_as_custom_fields"
-
-config = YAML::load(IO.read(File.dirname(__FILE__) + '/database.yml'))
-ActiveRecord::Base.logger = Logger.new(File.dirname(__FILE__) + "/debug.log")
-ActiveRecord::Base.establish_connection(config[ENV['DB'] || 'mysql'])
-
-plugin_fixture_path = File.expand_path(File.dirname(__FILE__) + "/fixtures/")
-$LOAD_PATH.unshift(plugin_fixture_path)
-
-Spec::Runner.configure do |config|
-  config.use_transactional_fixtures = true
-  config.use_instantiated_fixtures  = false
-  config.fixture_path = plugin_fixture_path
-end
-
-load(File.dirname(__FILE__) + "/schema.rb")
-
-alias :doing :lambda

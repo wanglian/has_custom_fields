@@ -1,50 +1,30 @@
-require 'rubygems'
-require 'rake'
-
+#!/usr/bin/env rake
 begin
-  require 'jeweler'
-  Jeweler::Tasks.new do |gem|
-    gem.name = "has_custom_fields"
-    gem.summary = %Q{The easy way to add custom fields to any Rails model.}
-    gem.description = %Q{Uses a vertical schema to add custom fields.}
-    gem.email = "kylejginavan@gmail.com"
-    gem.homepage = "http://github.com/kylejginavan/has_custom_fields"
-    gem.add_dependency('builder')
-    gem.authors = ["kylejginavan"]
-  end
-  Jeweler::GemcutterTasks.new
+  require 'bundler/setup'
 rescue LoadError
-  puts "has_custom_fields (or a dependency) not available. Install it with: gem install has_custom_fields"
-end
-
-require 'rake/testtask'
-Rake::TestTask.new(:test) do |test|
-  test.libs << 'test'
-  test.pattern = 'test/**/test_*.rb'
-  test.verbose = true
+  puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
 
 begin
-  require 'rcov/rcovtask'
-  Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/test_*.rb'
-    test.verbose = true
-  end
+  require 'rdoc/task'
 rescue LoadError
-  task :rcov do
-    abort "RCov is not available. In order to run rcov, you must: sudo gem install spicycode-rcov"
-  end
+  require 'rdoc/rdoc'
+  require 'rake/task'
+  RDoc::Task = Rake::RDocTask
 end
 
-task :default => :test
-
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
+RDoc::Task.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "constantations #{version}"
-  rdoc.rdoc_files.include('README*')
+  rdoc.title    = 'CustomFields'
+  rdoc.options << '--line-numbers'
+  rdoc.rdoc_files.include('README.rdoc')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+Bundler::GemHelper.install_tasks
+
+task :spec do
+  sh("bundle exec rspec spec") { |ok, res| }
+end
+
+task :default => :spec
