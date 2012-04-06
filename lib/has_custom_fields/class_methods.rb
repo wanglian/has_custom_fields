@@ -45,7 +45,11 @@ module HasCustomFields
       options[:values_class_name] ||= self.name + 'Attribute'
       options[:values_table_name] ||= options[:values_class_name].tableize
       options[:relationship_name] ||= options[:values_class_name].tableize.to_sym
-
+      
+      options[:select_options_class_name] ||= self.name + "FieldSelectOption"
+      options[:select_options_table_name] ||= options[:select_options_class_name].tableize
+      options[:select_options_relationship_name] ||= options[:select_options_class_name].pluralize.underscore.to_sym
+      
       options[:foreign_key] ||= self.name.foreign_key
       options[:base_foreign_key] ||= self.name.underscore.foreign_key
       options[:name_field] ||= 'name'
@@ -73,6 +77,13 @@ module HasCustomFields
         Object.const_get(options[:values_class_name])
       rescue
         HasCustomFields.create_associated_values_class(options)
+      end
+      
+      # Attempt to load ModelFieldSelectOption related class. If not create it
+      begin
+        Object.const_get(options[:select_options_class_name])
+      rescue
+        HasCustomFields.create_associated_select_options_class(options)
       end
 
       # Store options
@@ -131,7 +142,9 @@ module HasCustomFields
         cattr_accessor :custom_field_options
         belongs_to options[:fields_relationship_name],
           :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
+        
         alias_method :field, options[:fields_relationship_name]
+        
 
         def self.reloadable? #:nodoc:
           false
@@ -160,16 +173,30 @@ module HasCustomFields
       Object.const_set(options[:fields_class_name],
         Class.new(::HasCustomFields::Base)).class_eval do
           self.table_name = options[:fields_table_name]
+          has_many options[:select_options_relationship_name]
+          alias_method :related_select_options, options[:select_options_relationship_name]
           def self.reloadable? #:nodoc:
             false
           end
-
+          
           scopes = options[:scopes].map { |f| f.to_s.foreign_key }
           validates_uniqueness_of :name, :scope => scopes, :message => 'The field name is already taken.'
 
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(', ')}."
         end
       ::HasCustomFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
+    end
+    
+    def HasCustomFields.create_associated_select_options_class(options)
+      Object.const_set(options[:select_options_class_name],
+        Class.new(ActiveRecord::Base)).class_eval do
+          self.table_name = options[:select_options_table_name]
+          belongs_to options[:fields_relationship_name], :class_name => options[:fields_relationship_name].to_s
+
+          validates_presence_of :option, :message => 'The select option cannot be blank'
+
+        end
+      ::HasCustomFields.const_set(options[:select_options_class_name], Object.const_get(options[:select_options_class_name]))
     end
 
     def HasCustomFields.log(level, message)

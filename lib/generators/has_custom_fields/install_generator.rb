@@ -21,9 +21,24 @@ module HasCustomFields
 
     def generate_migration
       migration_template "has_custom_fields_migration.rb.erb", "db/migrate/#{migration_file_name}"
+      migration_template "has_custom_fields_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
+      migration_template "migrate_custom_fields_data.rb.erb", "db/migrate/#{data_migration_file_name}"
+      migration_template "remove_custom_fields_attribute.rb.erb", "db/migrate/#{remove_select_options_from_custom_field_migration_file_name}"
     end
 
     protected
+    
+    def custom_field_class_name
+      "#{name.singularize.capitalize}Field"
+    end
+    
+    def custom_field_relationship_name
+      "#{name.underscore.singularize}_field"
+    end
+    
+    def custom_field_select_options_class_name
+      "#{name.singularize.capitalize}FieldSelectOption"
+    end
 
     def field_table_name
       "#{name.underscore.singularize}_fields"
@@ -31,6 +46,10 @@ module HasCustomFields
 
     def attributes_table_name
       "#{name.underscore.singularize}_attributes"
+    end
+    
+    def select_options_table_name
+      "#{name.underscore.singularize}_field_select_options"
     end
 
     def model_foreign_key
@@ -44,12 +63,40 @@ module HasCustomFields
     def migration_name
       "create_custom_fields_for_#{name.underscore}"
     end
+    
+    def select_options_migration_name
+      "CreateCustomFieldSelectOptionsFor#{name.capitalize}"
+    end
+    
+    def data_migration_name
+      "MigrateCustomFieldsData"
+    end
+    
+    def remove_select_options_from_custom_field_migration_name
+      "RemoveCustomFieldsAttribute"
+    end
 
     def migration_file_name
       "#{migration_name}.rb"
     end
+    
+    def select_options_migration_file_name
+      "#{select_options_migration_name.underscore}.rb"
+    end
+    
+    def data_migration_file_name
+      "#{data_migration_name.underscore}.rb"
+    end
+    
+    def remove_select_options_from_custom_field_migration_file_name
+      "#{remove_select_options_from_custom_field_migration_name.underscore}.rb"
+    end
 
     def migration_class_name
+      migration_name.camelize
+    end
+    
+    def select_options_migration_class_name
       migration_name.camelize
     end
 
