@@ -142,10 +142,7 @@ module HasCustomFields
         cattr_accessor :custom_field_options
         belongs_to options[:fields_relationship_name],
           :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
-        
-        alias_method :field, options[:fields_relationship_name]
-        
-
+                
         def self.reloadable? #:nodoc:
           false
         end
@@ -173,12 +170,15 @@ module HasCustomFields
       Object.const_set(options[:fields_class_name],
         Class.new(::HasCustomFields::Base)).class_eval do
           self.table_name = options[:fields_table_name]
-          has_many options[:select_options_relationship_name]
-          alias_method :related_select_options, options[:select_options_relationship_name]
+          has_many :select_options,
+            :class_name => '::HasCustomFields::' + options[:select_options_class_name].singularize
+
           def self.reloadable? #:nodoc:
             false
           end
-          
+          def related_select_options
+            self.send("select_options")
+          end
           scopes = options[:scopes].map { |f| f.to_s.foreign_key }
           validates_uniqueness_of :name, :scope => scopes, :message => 'The field name is already taken.'
 
@@ -191,10 +191,16 @@ module HasCustomFields
       Object.const_set(options[:select_options_class_name],
         Class.new(ActiveRecord::Base)).class_eval do
           self.table_name = options[:select_options_table_name]
-          belongs_to options[:fields_relationship_name], :class_name => options[:fields_relationship_name].to_s
+          
+          belongs_to options[:fields_relationship_name],
+            :class_name => '::HasCustomFields::' + options[:fields_class_name].singularize
+            
+          def field
+            self.send((attributes.keys.detect{|k| k.match(/_field_id/)}.gsub("_id","")).to_sym)
+          end
 
-          validates_presence_of :option, :message => 'The select option cannot be blank'
-
+          validates_presence_of :option, :message => 'The select option cannot be blank.'
+          validates_exclusion_of :option, :in => Proc.new{|o| o.field.select_options.map{|opt| opt.option } }, :message => "There should not be any duplicate select options."
         end
       ::HasCustomFields.const_set(options[:select_options_class_name], Object.const_get(options[:select_options_class_name]))
     end

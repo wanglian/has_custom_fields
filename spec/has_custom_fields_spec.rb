@@ -64,10 +64,11 @@ describe 'Has Custom Fields' do
       @org = Organization.create!(:name => 'ABC Corp')
       UserField.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
       UserField.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
-      UserField.create!(:organization_id => @org.id, :name => 'Category', :style => 'select',
-                        :user_field_select_options => [UserFieldSelectOption.create!(:option => 'CatA'),
-                                           UserFieldSelectOption.create!(:option => 'CatB'),
-                                           UserFieldSelectOption.create!(:option => 'CatC')])
+      user_field = UserField.new(:organization_id => @org.id, :name => 'Category', :style => 'select')
+      user_field.save(:validate => false)
+      opt_a = UserFieldSelectOption.create!(:option => "CatA", :user_field => user_field)
+      opt_b = UserFieldSelectOption.create!(:option => "CatB", :user_field => user_field)
+      opt_c = UserFieldSelectOption.create!(:option => "CatC", :user_field => user_field)      
     end
 
     describe "class methods" do
@@ -81,7 +82,7 @@ describe 'Has Custom Fields' do
       end
       
       it "returns an array of select options" do
-        select_options = User.custom_field_fields(:organization, @org.id).last.user_field_select_options.map(&:option)
+        select_options = User.custom_field_fields(:organization, @org.id).last.select_options.map(&:option)
         select_options.should == ["CatA","CatB","CatC"]
       end
       
@@ -91,8 +92,8 @@ describe 'Has Custom Fields' do
       end
       
       it "should set up the has_many and belongs_to relationships" do
-        User.custom_field_fields(:organization, @org.id).first.respond_to?(:user_field_select_options).should == true
-        User.custom_field_fields(:organization, @org.id).last.user_field_select_options.first.respond_to?(:user_field).should == true
+        User.custom_field_fields(:organization, @org.id).first.respond_to?(:select_options).should == true
+        User.custom_field_fields(:organization, @org.id).last.select_options.first.respond_to?(:user_field).should == true
       end
 
     end
@@ -145,6 +146,25 @@ describe 'Has Custom Fields' do
     end
 
   end
+  
+  context "with select options" do
+  
+    describe "validations" do
 
+      it "raises an error if there are duplicate select options" do
+        @org = Organization.create!(:name => 'ABC Corp')
+        user_field = UserField.new(:organization_id => @org.id, :name => "Category", :style => "select")
+        user_field.save(:validate => false)
+        UserFieldSelectOption.create!(:option => "CatA", :user_field => user_field)
+        UserFieldSelectOption.create!(:option => "CatB", :user_field => user_field)
+
+        expect {
+          UserFieldSelectOption.create!(:option => "CatA", :user_field_id => 1)
+        }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Option There should not be any duplicate select options.')
+      end
+      
+    end
+    
+  end
 
 end

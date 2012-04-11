@@ -34,10 +34,12 @@ ActiveRecord::Schema.define(:version => 0) do
   end
   
   create_table "user_field_select_options", :force => true do |t|
-    t.integer "user_field_id"
+    t.integer "user_field_id", :null => false
     t.string "option"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
-    
+  
+  add_index "user_field_select_options", [:user_field_id, :option], :unique => true, :name => "user_field_options_index"
+  
 end

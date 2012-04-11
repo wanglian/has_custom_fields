@@ -24,6 +24,7 @@ module HasCustomFields
       migration_template "has_custom_fields_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
       migration_template "migrate_custom_fields_data.rb.erb", "db/migrate/#{data_migration_file_name}"
       migration_template "remove_custom_fields_attribute.rb.erb", "db/migrate/#{remove_select_options_from_custom_field_migration_file_name}"
+      migration_template "has_custom_fields_db_constraints.rb.erb", "db/migrate/#{add_db_constraints_migration_file_name}"
     end
 
     protected
@@ -75,6 +76,10 @@ module HasCustomFields
     def remove_select_options_from_custom_field_migration_name
       "RemoveCustomFieldsAttribute"
     end
+    
+    def add_db_constraints_migration_name
+      "AddDbConstraintsToCustomFields"
+    end
 
     def migration_file_name
       "#{migration_name}.rb"
@@ -90,6 +95,10 @@ module HasCustomFields
     
     def remove_select_options_from_custom_field_migration_file_name
       "#{remove_select_options_from_custom_field_migration_name.underscore}.rb"
+    end
+    
+    def add_db_constraints_migration_file_name
+      "#{add_db_constraints_migration_name.underscore}.rb"
     end
 
     def migration_class_name
