@@ -1,17 +1,17 @@
 class <%= add_db_constraints_migration_name %> < ActiveRecord::Migration
   
   def self.up
-	  # add fk constraint on field_select_options
-	  add_foreign_key :<%= select_options_table_name %>, :<%= field_table_name %>
-	  # add_index with uniq constraint :select_options_table_name, [:field_id, :option], :unique => true
-	  add_index :<%= select_options_table_name %>, [:<%= field_relationship_name %>_id, :option], :unique => true, :name => "<%=             field_relationship_name %>_options_index"
+    # add fk constraint on field_select_options
+    add_foreign_key :<%= select_options_table_name %>, :<%= field_table_name %>
+    # add_index with uniq constraint :select_options_table_name, [:field_id, :option], :unique => true
+    add_index :<%= select_options_table_name %>, [:<%= field_relationship_name %>_id, :option], :unique => true, :name => "<%=             field_relationship_name %>_options_index"
     # add :null => false on select_options_table_name.field_id
-  	change_column :<%= select_options_table_name %>, :<%= field_relationship_name %>_id, :integer, :null => false
+    change_column :<%= select_options_table_name %>, :<%= field_relationship_name %>_id, :integer, :null => false
   end
 
   def self.down
     remove_foreign_key :<%= select_options_table_name %>, :name => "<%= field_relationship_name %>_select_options_<%= field_relationship_name %>_id_fk"
-	  remove_index :<%= select_options_table_name %>, :name => "<%= field_relationship_name %>_options_index"
-	  change_column :<%= select_options_table_name %>, :<%= field_relationship_name %>_id, :integer
+    remove_index :<%= select_options_table_name %>, :name => "<%= field_relationship_name %>_options_index"
+    change_column :<%= select_options_table_name %>, :<%= field_relationship_name %>_id, :integer
   end
 end

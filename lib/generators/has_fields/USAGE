@@ -5,15 +5,19 @@ Example:
 
     Basic Usage:
 
-        rails generate has_fields_generator Post
-
-      This will create two tables in the database for the Post model,
-      post_fields and post_attributes with no scoping
+        rails generate has_fields_generator Post organization
         
-    Using Scopes:
-
-        rails generate has_fields_generator Post user organization
-
-      This will also create scoping columns on the generated post_fields
-      table for :user_id and :organization_id
+      This will create three tables in the database:
+        fields
+        attributes
+        select_options
+        
+      If you want to add a prefix to the table names, you can add a prefix on the end of the generate call:
+        
+        rails generate has_fields_generator Post organization has_fields
+        
+      Which should result in these tables:
       
+        has_fields_fields
+        has_fields_attributes
+        has_fields_select_options
