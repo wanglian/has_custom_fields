@@ -1,4 +1,4 @@
-class CreateCustomFieldSelectOptionsForUser < ActiveRecord::Migration
+class CreateFieldSelectOptionsForUser < ActiveRecord::Migration
   
   def self.up
     create_table(:user_field_select_options) do |t|

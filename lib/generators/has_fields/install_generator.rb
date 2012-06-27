@@ -1,12 +1,12 @@
 require 'rails/generators/active_record'
 
-module HasCustomFields
+module HasFields
   class InstallGenerator < ActiveRecord::Generators::Base
-    desc "Create a migration to create the has_custom_fields table to your database.\n" +
+    desc "Create a migration to create the has_fields table to your database.\n" +
          "The NAME argument is the name of your model and the following two arguments\n" +
          "are the scopes that you wish to add to the EAV association\n" +
          "\n" +
-         "  rails generate has_custom_fields_generator Post" +
+         "  rails generate has_fields_generator Post" +
          "\n"
          
     argument :scoped_models,
@@ -20,24 +20,24 @@ module HasCustomFields
     end
 
     def generate_migration
-      migration_template "has_custom_fields_migration.rb.erb", "db/migrate/#{migration_file_name}"
-      migration_template "has_custom_fields_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
-      migration_template "migrate_custom_fields_data.rb.erb", "db/migrate/#{data_migration_file_name}"
-      migration_template "remove_custom_fields_attribute.rb.erb", "db/migrate/#{remove_select_options_from_custom_field_migration_file_name}"
-      migration_template "has_custom_fields_db_constraints.rb.erb", "db/migrate/#{add_db_constraints_migration_file_name}"
+      migration_template "has_fields_migration.rb.erb", "db/migrate/#{migration_file_name}"
+      migration_template "has_fields_select_options_migration.rb.erb", "db/migrate/#{select_options_migration_file_name}"
+      migration_template "migrate_fields_data.rb.erb", "db/migrate/#{data_migration_file_name}"
+      migration_template "remove_fields_attribute.rb.erb", "db/migrate/#{remove_select_options_from_custom_field_migration_file_name}"
+      migration_template "has_fields_db_constraints.rb.erb", "db/migrate/#{add_db_constraints_migration_file_name}"
     end
 
     protected
     
-    def custom_field_class_name
+    def field_class_name
       "#{name.singularize.capitalize}Field"
     end
     
-    def custom_field_relationship_name
+    def field_relationship_name
       "#{name.underscore.singularize}_field"
     end
     
-    def custom_field_select_options_class_name
+    def field_select_options_class_name
       "#{name.singularize.capitalize}FieldSelectOption"
     end
 
@@ -62,23 +62,23 @@ module HasCustomFields
     end
 
     def migration_name
-      "create_custom_fields_for_#{name.underscore}"
+      "create_fields_for_#{name.underscore}"
     end
     
     def select_options_migration_name
-      "CreateCustomFieldSelectOptionsFor#{name.capitalize}"
+      "CreateFieldSelectOptionsFor#{name.capitalize}"
     end
     
     def data_migration_name
-      "MigrateCustomFieldsData"
+      "MigrateFieldsData"
     end
     
-    def remove_select_options_from_custom_field_migration_name
-      "RemoveCustomFieldsAttribute"
+    def remove_select_options_from_field_migration_name
+      "RemoveFieldsAttribute"
     end
     
     def add_db_constraints_migration_name
-      "AddDbConstraintsToCustomFields"
+      "AddDbConstraintsToFields"
     end
 
     def migration_file_name
@@ -93,8 +93,8 @@ module HasCustomFields
       "#{data_migration_name.underscore}.rb"
     end
     
-    def remove_select_options_from_custom_field_migration_file_name
-      "#{remove_select_options_from_custom_field_migration_name.underscore}.rb"
+    def remove_select_options_from_field_migration_file_name
+      "#{remove_select_options_from_field_migration_name.underscore}.rb"
     end
     
     def add_db_constraints_migration_file_name
