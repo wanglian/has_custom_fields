@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), "lib", "has_custom_fields")
-require "has_custom_fields/railtie"
+require File.join(File.dirname(__FILE__), "lib", "has_fields")
+require "has_fields/railtie"
 
-HasCustomFields.insert
+HasFields.insert
