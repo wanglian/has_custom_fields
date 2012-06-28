@@ -21,7 +21,6 @@ module HasFields
       @scope_id = scope_id
     end
     def [](tag)
-      # puts "** Calling get_field_attribute for #{@object.class},#{tag},#{@scope},#{@scope_id}"
       return @object.get_field_attribute(tag, @scope, @scope_id)
     end
   end
@@ -32,7 +31,6 @@ module HasFields
       @scope = scope
     end
     def [](scope_id)
-      # puts "** Returning a TagFacade for #{@object.class},#{@scope},#{scope_id}"
       return TagFacade.new(@object, @scope, scope_id)
     end
   end
@@ -42,7 +40,6 @@ module HasFields
       @object = object_with_fields
     end
     def [](scope)
-      # puts "** Returning a ScopeIdFacade for #{@object.class},#{scope}"
       return ScopeIdFacade.new(@object, scope)
     end
   end

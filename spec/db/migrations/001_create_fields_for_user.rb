@@ -11,7 +11,9 @@ class CreateFieldsForUser < ActiveRecord::Migration
     create_table(:attributes) do |t|
       t.integer :user_id, :null => false
       t.integer :field_id, :null => false
-      t.string  :value, :null => false
+      t.string   :string_value
+      t.boolean  :boolean_value
+      t.date     :date_value
       t.timestamps
     end
     

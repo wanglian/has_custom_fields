@@ -3,10 +3,6 @@ require 'rails/generators/active_record'
 module HasFields
   class InstallGenerator < ActiveRecord::Generators::Base
     
-    puts "================"
-    puts self.inspect
-    puts "================"
-    
     desc "Create a migration to create the has_fields tables to your database.\n" +
          "The NAME argument is the name of your model and the following two arguments\n" +
          "are the scopes that you wish to add to the EAV association\n" +
@@ -89,18 +85,6 @@ module HasFields
 
     def migration_file_name
       "#{migration_name}.rb"
-    end
-    
-    def select_options_migration_file_name
-      "#{select_options_migration_name.underscore}.rb"
-    end
-    
-    def data_migration_file_name
-      "#{data_migration_name.underscore}.rb"
-    end
-    
-    def remove_select_options_from_field_migration_file_name
-      "#{remove_select_options_from_field_migration_name.underscore}.rb"
     end
     
     def add_db_constraints_migration_file_name

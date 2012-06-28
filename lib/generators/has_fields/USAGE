@@ -21,3 +21,5 @@ Example:
         has_fields_fields
         has_fields_attributes
         has_fields_select_options
+        
+      If you want to name the tables something different again, edit the migration, and pass the option for the table name in the has_fields call.

@@ -25,18 +25,16 @@ Then check and run the generated migrations
 Then add the has_fields class method to your model:
 
     class User < ActiveRecord::Base
-      has_fields :scopes => [:organization], :db_tables_prefix => false
+      has_fields :scopes => [:organization]
     end
 
-The db_table_prefix option is used to name the tables in the database. By default it will be has_fields and the following tables will be created:
-  has_fields_fields
-  has_fields_attributes
-  has_fields_select_options
-  
-The example above passed false so there won't be a prefix and the tables will be:
-  fields
-  attributes
-  select_options
+Normally has_fields stores information in three tables:
+
+  fields - the name and type of the info being stored, and the scope id
+  attributes - the actual info, linked to the field and to the original class (User)
+  select_options - if the field has a 'select' type, the select options can be stored here
+
+If these table names appear to be too general or you want to use different tables for different calling classes, you can pass in a number of options (listed in the lib/has_fields/class_methods.rb file).
 
 Description
 -------------------------  

@@ -69,9 +69,9 @@ describe 'Has Fields' do
       UserField.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
       user_field = UserField.new(:organization_id => @org.id, :name => 'Category', :style => 'select')
       user_field.save(:validate => false)
-      opt_a = UserFieldSelectOption.create!(:option => "CatA", :user_field => user_field)
-      opt_b = UserFieldSelectOption.create!(:option => "CatB", :user_field => user_field)
-      opt_c = UserFieldSelectOption.create!(:option => "CatC", :user_field => user_field)      
+      opt_a = UserFieldSelectOption.create!(:option => "CatA", :field => user_field)
+      opt_b = UserFieldSelectOption.create!(:option => "CatB", :field => user_field)
+      opt_c = UserFieldSelectOption.create!(:option => "CatC", :field => user_field)      
     end
 
     describe "class methods" do
@@ -96,7 +96,7 @@ describe 'Has Fields' do
       
       it "should set up the has_many and belongs_to relationships" do
         User.fields(@org).first.respond_to?(:select_options).should == true
-        User.fields(@org).last.select_options.first.respond_to?(:user_field).should == true
+        User.fields(@org).last.select_options.first.respond_to?(:field).should == true
       end
 
     end
@@ -123,7 +123,7 @@ describe 'Has Fields' do
       it "sets the value of the field and persists it in the database" do
         expect {
           @user.update_attributes(:fields => {:organization => {@org.id => {'Value' => '10000', 'Customer' => '1'}}})
-          @user.fields[:organization][@org.id]['Customer'].should == '1'
+          @user.fields[:organization][@org.id]['Customer'].should == true
           @user.fields[:organization][@org.id]['Value'].should == '10000'
         }.to change(UserAttribute, :count).by(2)
       end
@@ -158,11 +158,11 @@ describe 'Has Fields' do
         @org = Organization.create!(:name => 'ABC Corp')
         user_field = UserField.new(:organization_id => @org.id, :name => "Category", :style => "select")
         user_field.save(:validate => false)
-        UserFieldSelectOption.create!(:option => "CatA", :user_field => user_field)
-        UserFieldSelectOption.create!(:option => "CatB", :user_field => user_field)
+        UserFieldSelectOption.create!(:option => "CatA", :field => user_field)
+        UserFieldSelectOption.create!(:option => "CatB", :field => user_field)
 
         expect {
-          UserFieldSelectOption.create!(:option => "CatA", :user_field_id => 1)
+          UserFieldSelectOption.create!(:option => "CatA", :field_id => 1)
         }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Option There should not be any duplicate select options.')
       end
       
