@@ -55,8 +55,8 @@ module HasFields
       values_class = options[:values_class_name]
       value_field = options[:value_field]
       fields_fkey = options[:fields_table_name].singularize.foreign_key
-      fields = Object.const_get(fields_class)
-      values = Object.const_get(values_class)
+      fields = Field
+      values = FieldAttribute
       HasFields.log(:debug, "fkey is: #{fields_fkey}")
       HasFields.log(:debug, "fields class: #{fields.to_s}")
       HasFields.log(:debug, "values class: #{values.to_s}")

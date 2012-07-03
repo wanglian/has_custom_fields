@@ -9,8 +9,8 @@ Example:
         
       This will create three tables in the database:
         fields
-        attributes
-        select_options
+        field_attributes
+        field_select_options
         
       If you want to add a prefix to the table names, you can add a prefix on the end of the generate call:
         
@@ -19,7 +19,7 @@ Example:
       Which should result in these tables:
       
         has_fields_fields
-        has_fields_attributes
-        has_fields_select_options
+        has_fields_fields_attributes
+        has_fields_fields_select_options
         
       If you want to name the tables something different again, edit the migration, and pass the option for the table name in the has_fields call.
