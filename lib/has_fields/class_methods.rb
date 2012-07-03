@@ -13,11 +13,11 @@ module HasFields
       options[:fields_relationship_name] ||= options[:fields_class_name].underscore.to_sym
 
       options[:values_class_name] ||= self.name + "Attribute"
-      options[:values_table_name] ||= "fields_attributes"
+      options[:values_table_name] ||= "field_attributes"
       options[:relationship_name] ||= options[:values_class_name].tableize.to_sym
       
       options[:select_options_class_name] ||= self.name + "FieldSelectOption"
-      options[:select_options_table_name] ||= "fields_select_options"
+      options[:select_options_table_name] ||= "field_select_options"
       options[:select_options_relationship_name] ||= options[:select_options_class_name].pluralize.underscore.to_sym
       
       options[:foreign_key] ||= self.name.foreign_key
