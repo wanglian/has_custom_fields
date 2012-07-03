@@ -84,7 +84,7 @@ module HasFields
       end
       
       instance_eval do
-        has_many 'field_attributes',
+        has_many "field_attributes",
           :dependent => :destroy
       end
     end
@@ -106,7 +106,7 @@ module HasFields
     private
 
     def HasFields.create_associated_values_class(options)
-      Object.const_set('FieldAttribute',
+      Object.const_set("FieldAttribute",
       Class.new(ActiveRecord::Base)).class_eval do
         self.table_name = options[:values_table_name]
 
@@ -121,7 +121,7 @@ module HasFields
         end
         
         def value=(v)
-          send("#{data_type_from_field_style}_value=",v)
+          send("#{data_type_from_field_style}_value=", v)
         end
         
         def data_type_from_field_style
@@ -150,11 +150,11 @@ module HasFields
           end
         end
       end
-      ::HasFields.const_set('FieldAttribute', Object.const_get('FieldAttribute'))
+      ::HasFields.const_set("FieldAttribute", Object.const_get("FieldAttribute"))
     end
 
     def HasFields.create_associated_fields_class(options)
-      Object.const_set('Field',
+      Object.const_set("Field",
         Class.new(::HasFields::Base)).class_eval do
           self.table_name = options[:fields_table_name]
           has_many :field_attributes, 
@@ -175,11 +175,11 @@ module HasFields
 
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(", ")}."
         end
-      ::HasFields.const_set('Field', Object.const_get('Field'))
+      ::HasFields.const_set("Field", Object.const_get("Field"))
     end
     
     def HasFields.create_associated_select_options_class(options)
-      Object.const_set('FieldSelectOption',
+      Object.const_set("FieldSelectOption",
         Class.new(ActiveRecord::Base)).class_eval do
           self.table_name = options[:select_options_table_name]
           
@@ -189,7 +189,7 @@ module HasFields
           validates_presence_of :option, :message => "The select option cannot be blank."
           validates_exclusion_of :option, :in => Proc.new{|o| o.field.select_options.map{|opt| opt.option } }, :message => "There should not be any duplicate select options."
         end
-      ::HasFields.const_set('FieldSelectOption', Object.const_get('FieldSelectOption'))
+      ::HasFields.const_set("FieldSelectOption", Object.const_get("FieldSelectOption"))
     end
 
     def HasFields.log(level, message)
