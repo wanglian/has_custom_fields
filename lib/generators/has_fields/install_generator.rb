@@ -48,11 +48,11 @@ module HasFields
     end
 
     def attributes_table_name
-      "#{database_table_prefix ? "#{database_table_prefix}_" : ''}attributes"
+      "#{database_table_prefix ? "#{database_table_prefix}_" : ''}field_attributes"
     end
     
     def select_options_table_name
-      "#{database_table_prefix ? "#{database_table_prefix}_" : ''}select_options"
+      "#{database_table_prefix ? "#{database_table_prefix}_" : ''}field_select_options"
     end
 
     def model_foreign_key

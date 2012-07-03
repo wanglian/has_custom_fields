@@ -13,11 +13,11 @@ module HasFields
       options[:fields_relationship_name] ||= options[:fields_class_name].underscore.to_sym
 
       options[:values_class_name] ||= self.name + "Attribute"
-      options[:values_table_name] ||= "attributes"
+      options[:values_table_name] ||= "fields_attributes"
       options[:relationship_name] ||= options[:values_class_name].tableize.to_sym
       
       options[:select_options_class_name] ||= self.name + "FieldSelectOption"
-      options[:select_options_table_name] ||= "select_options"
+      options[:select_options_table_name] ||= "fields_select_options"
       options[:select_options_relationship_name] ||= options[:select_options_class_name].pluralize.underscore.to_sym
       
       options[:foreign_key] ||= self.name.foreign_key
@@ -60,9 +60,8 @@ module HasFields
       self.field_options[self.name] = options
 
       # Modify attribute class
-      attribute_class = Object.const_get(options[:values_class_name])
       base_class = self.name.underscore.to_sym
-      attribute_class.class_eval do
+      FieldAttribute.class_eval do
         belongs_to base_class, :foreign_key => options[:base_foreign_key]
         alias_method :base, base_class # For generic access
       end
@@ -70,11 +69,6 @@ module HasFields
       # Modify main class
       class_eval do
         attr_accessible :fields
-        has_many options[:fields_relationship_name],
-          :class_name => options[:values_class_name],
-          :table_name => options[:values_table_name],
-          :foreign_key => options[:foreign_key],
-          :dependent => :destroy
 
         # The following is only setup once
         unless method_defined? :read_attribute_without_field_behavior
@@ -90,10 +84,7 @@ module HasFields
       end
       
       instance_eval do
-        has_many options[:relationship_name],
-          :class_name => options[:values_class_name],
-          :table_name => options[:values_class_name],
-          :foreign_key => options[:foreign_key],
+        has_many 'field_attributes',
           :dependent => :destroy
       end
     end
@@ -103,24 +94,24 @@ module HasFields
         raise ArgumentError, "Please provide a scope for the fields, eg Advisor.fields(@organization)"
       end
       options = field_options[self.name]
-      klass = Object.const_get(options[:fields_class_name])
+      base_class = self.name.underscore.to_sym
       begin
-        return klass.send("find_all_by_#{scope.class.name.underscore}_id", scope.id, :order => :id)
+        return Field.send("find_all_by_#{scope.class.name.underscore}_id", scope.id, :order => :id)
       rescue NoMethodError
-        parent_class = klass.to_s.sub("Field", "")
-        raise InvalidScopeError, "Class #{parent_class} does not have scope :#{scope.class.name.downcase} defined for has_fields"
+        parent_class = self.class.name
+        raise InvalidScopeError, "Class #{base_class} does not have scope :#{scope.class.name.downcase} defined for has_fields"
       end
     end
 
     private
 
     def HasFields.create_associated_values_class(options)
-      Object.const_set(options[:values_class_name],
+      Object.const_set('FieldAttribute',
       Class.new(ActiveRecord::Base)).class_eval do
         self.table_name = options[:values_table_name]
 
         cattr_accessor :field_options
-        belongs_to :field, :class_name => "::HasFields::" + options[:fields_class_name].singularize
+        belongs_to :field, :class_name => "::HasFields::Field"
         def self.reloadable? #:nodoc:
           false
         end
@@ -159,18 +150,18 @@ module HasFields
           end
         end
       end
-      ::HasFields.const_set(options[:values_class_name], Object.const_get(options[:values_class_name]))
+      ::HasFields.const_set('FieldAttribute', Object.const_get('FieldAttribute'))
     end
 
     def HasFields.create_associated_fields_class(options)
-      Object.const_set(options[:fields_class_name],
+      Object.const_set('Field',
         Class.new(::HasFields::Base)).class_eval do
           self.table_name = options[:fields_table_name]
-          has_many :values, 
-            :class_name => "::HasFields::" + options[:values_class_name].singularize,
+          has_many :field_attributes, 
+            :class_name => "::HasFields::FieldAttribute",
             :foreign_key => :field_id
           has_many :select_options,
-            :class_name => "::HasFields::" + options[:select_options_class_name].singularize,
+            :class_name => "::HasFields::FieldSelectOption",
             :foreign_key => :field_id
           
           def self.reloadable? #:nodoc:
@@ -184,21 +175,21 @@ module HasFields
 
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(", ")}."
         end
-      ::HasFields.const_set(options[:fields_class_name], Object.const_get(options[:fields_class_name]))
+      ::HasFields.const_set('Field', Object.const_get('Field'))
     end
     
     def HasFields.create_associated_select_options_class(options)
-      Object.const_set(options[:select_options_class_name],
+      Object.const_set('FieldSelectOption',
         Class.new(ActiveRecord::Base)).class_eval do
           self.table_name = options[:select_options_table_name]
           
           belongs_to :field,
-            :class_name => "::HasFields::" + options[:fields_class_name].singularize
+            :class_name => "::HasFields::Field"
 
           validates_presence_of :option, :message => "The select option cannot be blank."
           validates_exclusion_of :option, :in => Proc.new{|o| o.field.select_options.map{|opt| opt.option } }, :message => "There should not be any duplicate select options."
         end
-      ::HasFields.const_set(options[:select_options_class_name], Object.const_get(options[:select_options_class_name]))
+      ::HasFields.const_set('FieldSelectOption', Object.const_get('FieldSelectOption'))
     end
 
     def HasFields.log(level, message)
