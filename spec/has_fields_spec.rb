@@ -28,7 +28,7 @@ describe 'Has Fields' do
       it "raises an exception if the scope doesn't exist" do
         expect {
           User.fields(Hash.new)  
-        }.to raise_error(HasFields::InvalidScopeError, 'Class User does not have scope :hash defined for has_fields')
+        }.to raise_error(HasFields::InvalidScopeError, 'Class user does not have scope :hash defined for has_fields')
       end
 
     end
@@ -55,8 +55,8 @@ describe 'Has Fields' do
     it "creates the fields" do
       @org = Organization.create!(:name => 'ABC Corp')
       expect {
-        UserField.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
-      }.to change(HasFields::UserField, :count).by(1)
+        Field.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
+      }.to change(HasFields::Field, :count).by(1)
     end
 
   end
@@ -65,13 +65,13 @@ describe 'Has Fields' do
 
     before(:each) do
       @org = Organization.create!(:name => 'ABC Corp')
-      UserField.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
-      UserField.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
-      user_field = UserField.new(:organization_id => @org.id, :name => 'Category', :style => 'select')
+      Field.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
+      Field.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
+      user_field = Field.new(:organization_id => @org.id, :name => 'Category', :style => 'select')
       user_field.save(:validate => false)
-      opt_a = UserFieldSelectOption.create!(:option => "CatA", :field => user_field)
-      opt_b = UserFieldSelectOption.create!(:option => "CatB", :field => user_field)
-      opt_c = UserFieldSelectOption.create!(:option => "CatC", :field => user_field)      
+      opt_a = FieldSelectOption.create!(:option => "CatA", :field => user_field)
+      opt_b = FieldSelectOption.create!(:option => "CatB", :field => user_field)
+      opt_c = FieldSelectOption.create!(:option => "CatC", :field => user_field)      
     end
 
     describe "class methods" do
@@ -125,7 +125,7 @@ describe 'Has Fields' do
           @user.update_attributes(:fields => {:organization => {@org.id => {'Value' => '10000', 'Customer' => '1'}}})
           @user.fields[:organization][@org.id]['Customer'].should == true
           @user.fields[:organization][@org.id]['Value'].should == '10000'
-        }.to change(UserAttribute, :count).by(2)
+        }.to change(FieldAttribute, :count).by(2)
       end
 
       it "does not persist in the database if the value is nil or blank" do
@@ -133,7 +133,7 @@ describe 'Has Fields' do
           @user.update_attributes(:fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})
           @user.fields[:organization][@org.id]['Customer'].should be_nil
           @user.fields[:organization][@org.id]['Value'].should be_nil
-        }.to change(UserAttribute, :count).by(0)
+        }.to change(FieldAttribute, :count).by(0)
       end
 
       it "deletes the value from the database if the value is nil or blank" do
@@ -143,7 +143,7 @@ describe 'Has Fields' do
           @user.update_attributes(:fields => {:organization => {@org.id => {'Value' => '', 'Customer' => nil}}})
           @user.fields[:organization][@org.id]['Customer'].should be_nil
           @user.fields[:organization][@org.id]['Value'].should be_nil
-        }.to change(UserAttribute, :count).by(-2)
+        }.to change(FieldAttribute, :count).by(-2)
       end
 
     end
@@ -156,13 +156,13 @@ describe 'Has Fields' do
 
       it "raises an error if there are duplicate select options" do
         @org = Organization.create!(:name => 'ABC Corp')
-        user_field = UserField.new(:organization_id => @org.id, :name => "Category", :style => "select")
+        user_field = Field.new(:organization_id => @org.id, :name => "Category", :style => "select")
         user_field.save(:validate => false)
-        UserFieldSelectOption.create!(:option => "CatA", :field => user_field)
-        UserFieldSelectOption.create!(:option => "CatB", :field => user_field)
+        FieldSelectOption.create!(:option => "CatA", :field => user_field)
+        FieldSelectOption.create!(:option => "CatB", :field => user_field)
 
         expect {
-          UserFieldSelectOption.create!(:option => "CatA", :field_id => 1)
+          FieldSelectOption.create!(:option => "CatA", :field_id => 1)
         }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Option There should not be any duplicate select options.')
       end
       
