@@ -1,29 +1,16 @@
-require "active_support"
-require "active_record"
-require "database_cleaner"
+require 'rubygems'
+require 'bundler'
 
-ENV['debug'] = 'test' unless ENV['debug']
+Bundler.require :default, :development
 
-# Establish DB Connection
-config = YAML::load(IO.read(File.join(File.dirname(__FILE__), 'db', 'database.yml')))
-ActiveRecord::Base.configurations = {'test' => config[ENV['DB'] || 'sqlite3']}
-ActiveRecord::Base.establish_connection(ActiveRecord::Base.configurations['test'])
+Combustion.initialize!
 
-# Load Test Schema into the Database
-load(File.dirname(__FILE__) + "/db/schema.rb")
-
-require File.dirname(__FILE__) + '/../init'
-
-# Load in the test models
-
-require File.dirname(__FILE__) + '/test_models/user'
-require File.dirname(__FILE__) + '/test_models/organization'
+#require 'rspec/rails'
 
 RSpec.configure do |config|
 
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
-    DatabaseCleaner.clean_with(:truncation)
+    DatabaseCleaner.strategy = :truncation
   end
 
   config.before(:each) do
@@ -33,5 +20,4 @@ RSpec.configure do |config|
   config.after(:each) do
     DatabaseCleaner.clean
   end
-
 end

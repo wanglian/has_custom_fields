@@ -1,0 +1,30 @@
+<div class="content-section fields-section" id="fieldsSection">
+  <h4 class="content-section-head"><span>Fields</span></h4>
+  <div class="form">
+    <div class="field-group entity-fields organization-fields">
+      <h5 class="field-group-head"><span>Organization Fields</span></h5>
+      <% if @organization_fields.empty? %>
+      <p>none</p>
+      <% else %>
+      <% @organization_fields.each do |field| %>
+      <p class="field">
+        <dfn class="field-label"><%= field.name %></dfn> <span class="value"><% if field_attribute = @fieldable.fields[:organization][current_user.organization_id][field.name] %><%= field_attribute.is_a?(TrueClass) ? "Yes" : field_attribute %><% end %></span>
+      </p>
+      <% end %>
+      <% end %>
+    </div>
+    <div class="field-group entity-fields user-fields">
+      <h5 class="field-group-head"><span>User Fields</span></h5>
+      <% if @user_fields.empty? %>
+      <p>none</p>
+      <% else %>
+      <% @user_fields.each do |field| %>
+      <p class="field">
+        <dfn class="field-label"><%= field.name %></dfn> <span class="value"><% if field_attribute = @fieldable.fields[:user][current_user.id][field.name] %><%= field_attribute.is_a?(TrueClass) ? "Yes" : field_attribute %><% end %></span>
+      </p>
+      <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>
+

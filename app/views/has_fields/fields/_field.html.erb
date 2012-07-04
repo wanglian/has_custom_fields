@@ -1,0 +1,29 @@
+<% name = "fieldable[fields][#{scope}][#{scope_id}][#{field.name}]" %>
+<% if field.style == "select" %>
+<p class="field select-field">
+  <label>
+    <span class="field-label"><%= field.name %></span>
+    <select class="input" name="<%= name %>">
+      <option<% if entity.fields[scope][scope_id][field.name].nil? %> selected="selected"<% end %>></option>
+      <%= options_for_select(field.select_options_data, entity.fields[scope][scope_id][field.name]) %>
+    </select>
+  </label>
+</p>
+<% elsif field.style == "text" %>
+<p class="field text-field">
+  <label>
+    <span class="field-label"><%= field.name %></span>
+    <input class="input" type="text" name="<%= name %>" value="<%= entity.fields[scope][scope_id][field.name] %>" />
+  </label>
+</p>
+<% elsif field.style == "checkbox" %>
+<p class="field checkbox-field">
+  <input type="hidden" value="" name="<%= name %>" />
+  <label>
+    <input type="checkbox" name="<%= name %>" value="true"<% if entity.fields[scope][scope_id][field.name] %> checked="checked"<% end %> />
+    <span class="field-label"><%= field.name %></span>
+  </label>
+</p>
+<% elsif field.style == "date" %>
+  <%= date_select "fieldable[fields][#{scope}][#{scope_id}][#{field.name}]", 'date', {:default => entity.fields[scope][scope_id][field.name], :include_blank => true} %>
+<% end %>

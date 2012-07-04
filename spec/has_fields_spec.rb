@@ -69,7 +69,7 @@ describe 'Has Fields' do
       Field.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
       user_field = Field.new(:organization_id => @org.id, :name => 'Category', :style => 'select')
       user_field.save(:validate => false)
-      opt_a = FieldSelectOption.create!(:option => "CatA", :field => user_field)
+      opt_a = FieldSelectOption.create!(:option => "CatA", :field_id => user_field.id)
       opt_b = FieldSelectOption.create!(:option => "CatB", :field => user_field)
       opt_c = FieldSelectOption.create!(:option => "CatC", :field => user_field)      
     end
