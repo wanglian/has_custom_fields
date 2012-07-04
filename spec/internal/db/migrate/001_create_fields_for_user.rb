@@ -19,14 +19,16 @@ class CreateFieldsForUser < ActiveRecord::Migration
     add_index :fields_attributes, ["user_id", "field_id"], :unique => true
     add_index :fields_attributes, :user_id
     add_index :fields_attributes, :field_id
-    add_index :fields_attributes, :value
+    add_index :fields_attributes, :string_value
+    add_index :fields_attributes, :boolean_value
+    add_index :fields_attributes, :date_value
         
     create_table(:fields_select_options) do |t|
       t.string :option, :null => false, :limit => 63
-      t.integer :user_field_id
+      t.integer :field_id
       t.timestamps
     end
-    add_index :fields_select_options, :user_field_id, :unique => false
+    add_index :fields_select_options, :field_id, :unique => false
 
   end
 

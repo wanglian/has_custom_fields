@@ -1,0 +1,33 @@
+<div class="content-section fields-section" id="fieldsSection">
+  <h4 class="content-section-head"><span>Fields</span></h4>
+  <%= common_error_messages(@fieldable.class.table_name.to_sym) %>
+  <form class="form" action="/<%= @fieldable.class.table_name %>/<%= @fieldable.id %>/fields" method="post" autocomplete="off" novalidate="novalidate">
+    <div class="form-actions"><input type="submit" name="save" value="save" /></div>
+    <fieldset class="field-group entity-fields organization-fields">
+      <legend class="field-group-head"><span>Organization</span></legend>
+      <% if @organization_fields.empty? %>
+      <p>none</p>
+      <% else %>
+      <% @organization_fields.each do |organization_field| %>
+      <%= render :partial => "/has_fields/fields/field", :formats => [:html], :locals => {:field => organization_field, :entity => @fieldable, :scope => :organization, :scope_id => current_user.organization.id} %>
+      <% end %>
+      <% end %>
+    </fieldset>
+    <fieldset class="field-group entity-fields user-fields">
+      <legend class="field-group-head"><span>User</span></legend>
+      <% if @user_fields.empty? %>
+      <p>none</p>
+      <% else %>
+      <% @user_fields.each do |user_field| %>
+      <%= render :partial => "/fields/field", :formats => [:html], :locals => {:field => user_field, :entity => @fieldable, :scope => :user, :scope_id => current_user.id} %>
+      <% end %>
+      <% end %>
+    </fieldset>
+    <p class="form-actions">
+      <input name="_method" type="hidden" value="put" />
+      <input  class="action save-action" type="submit" name="save" value="save" />
+      <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= @fieldable.class.table_name.singularize %>/<%= @fieldable.id %>#infoSection">cancel</a>
+    </p>
+  </form>
+</div>
