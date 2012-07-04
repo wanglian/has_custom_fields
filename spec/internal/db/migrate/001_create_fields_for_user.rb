@@ -8,7 +8,7 @@ class CreateFieldsForUser < ActiveRecord::Migration
     end
     add_index :fields, ["organization_id", "name"], :unique => true
     
-    create_table(:fields_attributes) do |t|
+    create_table(:field_attributes) do |t|
       t.integer :user_id, :null => false
       t.integer :field_id, :null => false
       t.string   :string_value
@@ -21,9 +21,8 @@ class CreateFieldsForUser < ActiveRecord::Migration
     add_index :fields_attributes, :field_id
     add_index :fields_attributes, :string_value
     add_index :fields_attributes, :boolean_value
-    add_index :fields_attributes, :date_value
-        
-    create_table(:fields_select_options) do |t|
+    add_index :fields_attributes, :date_value        
+    create_table(:field_select_options) do |t|
       t.string :option, :null => false, :limit => 63
       t.integer :field_id
       t.timestamps
@@ -34,7 +33,7 @@ class CreateFieldsForUser < ActiveRecord::Migration
 
   def self.down
     drop_table(:fields)
-    drop_table(:fields_attributes)
-    drop_table(:fields_select_options)
+    drop_table(:field_attributes)
+    drop_table(:field_select_options)
   end
 end
