@@ -28,7 +28,7 @@ describe 'Has Fields' do
       it "raises an exception if the scope doesn't exist" do
         expect {
           User.fields(Hash.new)  
-        }.to raise_error(HasFields::InvalidScopeError, 'Class user does not have scope :hash defined for has_fields')
+        }.to raise_error(HasFields::InvalidScopeError, 'Class User does not have scope :hash defined for has_fields')
       end
 
     end
@@ -55,7 +55,7 @@ describe 'Has Fields' do
     it "creates the fields" do
       @org = Organization.create!(:name => 'ABC Corp')
       expect {
-        Field.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
+        Field.create!(:organization_id => @org.id, :name => 'Value', :style => 'text', :kind => "User")
       }.to change(HasFields::Field, :count).by(1)
     end
 
@@ -65,9 +65,9 @@ describe 'Has Fields' do
 
     before(:each) do
       @org = Organization.create!(:name => 'ABC Corp')
-      Field.create!(:organization_id => @org.id, :name => 'Value', :style => 'text')
-      Field.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox')
-      user_field = Field.new(:organization_id => @org.id, :name => 'Category', :style => 'select')
+      Field.create!(:organization_id => @org.id, :name => 'Value', :style => 'text', :kind => "User")
+      Field.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox', :kind => "User")
+      user_field = Field.new(:organization_id => @org.id, :name => 'Category', :style => 'select', :kind => "User")
       user_field.save(:validate => false)
       opt_a = FieldSelectOption.create!(:option => "CatA", :field_id => user_field.id)
       opt_b = FieldSelectOption.create!(:option => "CatB", :field => user_field)
@@ -77,7 +77,7 @@ describe 'Has Fields' do
     describe "class methods" do
 
       it "returns an array of UserFields" do
-        User.fields(@org).length.should == 3
+        User.fields(@org).size.should == 3
         values = User.fields(@org).map(&:name)
         values.should include('Customer')
         values.should include('Value')

@@ -5,7 +5,9 @@ module HasFields
       :message => 'Please specify the field name.'
     validates_presence_of :select_options_data,
       :if => "self.style.to_sym == :select",
-      :message => "You must enter options for the selection"
+      :message => "You must enter options for the selection."
+    validates_presence_of :kind,
+      :message => 'Please specify the class that this field will be added to.'
 
     def select_options_data
       (self.related_select_options.collect{|o| o.option } || [])
