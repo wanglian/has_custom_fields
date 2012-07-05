@@ -3,6 +3,7 @@ class CreateFieldsForUser < ActiveRecord::Migration
     create_table(:fields) do |t|
       t.string :name, :null => false, :limit => 63
       t.string :style, :null => false, :limit => 15
+      t.string :kind
       t.integer :organization_id
       t.timestamps
     end

@@ -5,7 +5,6 @@ require 'has_fields/engine'
 require 'has_fields/class_methods'
 require 'has_fields/instance_methods'
 require 'has_fields/base'
-require 'has_fields/routes'
 
 ##
 # HasFields allow for the Entity-attribute-value model (EAV), also 
