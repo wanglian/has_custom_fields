@@ -1,0 +1,35 @@
+<div class="content-section info-section" id="infoSection">
+  <h4 class="content-section-head"><span>Field</span></h4>
+
+  <p>
+    <strong>
+      Name:
+    </strong>
+    <%= @field.name %>
+  </p>
+  <p>
+    <strong>
+      Kind:
+    </strong>
+    <%= @field.kind %>
+  </p>
+  <p>
+    <strong>
+      style:
+    </strong>
+    <%= @field.style %>
+  </p>
+  <p>
+    <strong>
+      Scoped by <%= @field.scoped_by_class %>:
+    </strong>
+    <%= @field.scoped_by_object.name %>
+  </p>
+  <p>
+    <strong>
+      Number of associated field attributes:
+    </strong>
+    <%= @field.field_attributes.count %>
+  </p>
+</div>
+<%= link_to("Edit", "/advisors/fields/manage/#{@field.id}/edit") %>

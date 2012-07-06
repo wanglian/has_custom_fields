@@ -2,7 +2,6 @@ module HasFields
   module ClassMethods
 
     def has_fields(options = {})
-
       unless options[:scopes].respond_to?(:each)
         raise ArgumentError, "Must define :scope => [] on the has_fields class method"
       end
@@ -81,6 +80,7 @@ module HasFields
           alias_method_chain :read_attribute, :field_behavior
           alias_method_chain :write_attribute, :field_behavior
         end
+        
       end
       
       instance_eval do
@@ -96,11 +96,24 @@ module HasFields
       options = field_options[self.name]
       base_class = self.name.underscore.to_sym
       begin
-        return Field.send("find_all_by_#{scope.class.name.underscore}_id", scope.id, :order => :id)
+        return Field.send("find_all_by_#{scope.class.name.underscore}_id_and_kind", scope.id, self.name, :order => :id)
       rescue NoMethodError
         parent_class = self.class.name
-        raise InvalidScopeError, "Class #{base_class} does not have scope :#{scope.class.name.downcase} defined for has_fields"
+        raise InvalidScopeError, "Class #{self.name} does not have scope :#{scope.class.name.downcase} defined for has_fields"
       end
+    end
+    
+    # Builds an array of objects that a field can be scoped by, to be used in a grouped select box in the form.
+    # It is expensive if there are a lot of objects and assumes the object has a field name or method,
+    # so you might want to define your own /has_fields/admin/fields/scope_select partial
+    def scope_select_options
+      scopes = Array(field_options[self.name][:scopes])
+      scope_groups = []
+      scopes.each_with_index do |s,index|
+        scope_groups << [s.to_s.capitalize.pluralize]
+        scope_groups[index] << s.to_s.classify.constantize.all.sort_by(&:name).collect{|s| [s.name,"#{s.class}_#{s.id}"]}
+      end
+      scope_groups
     end
 
     private
@@ -163,12 +176,28 @@ module HasFields
           has_many :select_options,
             :class_name => "::HasFields::FieldSelectOption",
             :foreign_key => :field_id
+          belongs_to :scoped_by_object,
+            :class_name => proc { |s| self.scoped_by_class }
           
           def self.reloadable? #:nodoc:
             false
           end
+          
           def related_select_options
             self.send("select_options")
+          end
+          
+          def scoped_by_class
+            attributes.detect{|k,v| k.match(/_id/) && !v.nil?}[0].gsub("_id","")
+          end
+          
+          def scoped_by_object
+            scoped_by_class.classify.constantize.send(:find,eval("#{scoped_by_class}_id"))       
+          end
+          
+          def scope_id=(scope_class_and_id)
+            scope_class, scope_id = scope_class_and_id.split("_")
+            self.send("#{scope_class.underscore}_id=", scope_id)
           end
           scopes = options[:scopes].map { |f| f.to_s.foreign_key }
           validates_uniqueness_of :name, :scope => scopes, :message => "The field name is already taken."
