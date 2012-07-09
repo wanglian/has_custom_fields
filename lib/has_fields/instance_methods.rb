@@ -48,7 +48,6 @@ module HasFields
     end
 
     def get_value_object(attribute_name, scope, scope_id)
-      HasFields.log(:debug, "scope/id is: #{scope}/#{scope_id}")
       options = HasFields.config[self.class.name]
       model_fkey = HasFields.config[self.class.name][:foreign_key].singularize
       fields_class = HasFields.config[self.class.name][:fields_class_name]
@@ -57,18 +56,10 @@ module HasFields
       fields_fkey = HasFields.config[self.class.name][:fields_table_name].singularize.foreign_key
       fields = Field
       values = FieldAttribute
-      HasFields.log(:debug, "fkey is: #{fields_fkey}")
-      HasFields.log(:debug, "fields class: #{fields.to_s}")
-      HasFields.log(:debug, "values class: #{values.to_s}")
-      HasFields.log(:debug, "scope is: #{scope}")
-      HasFields.log(:debug, "scope_id is: #{scope_id}")
-      HasFields.log(:debug, "attribute_name is: #{attribute_name}")
-
       f = fields.send("find_by_name_and_#{scope}_id", attribute_name, scope_id)
       
       raise(ActiveRecord::RecordNotFound, "No field #{attribute_name} for #{scope} #{scope_id}") if f.nil?
 
-      HasFields.log(:debug, "field: #{f.inspect}")
       field_id = f.id
       model_id = self.id
       value_object = values.send("find_by_#{model_fkey}_and_#{fields_fkey}", model_id, field_id)
@@ -88,7 +79,6 @@ module HasFields
       value_object = get_value_object(attribute_name, scope, scope_id)
       case value_object.field.style
       when "date"
-        HasFields.log(:debug, "reading date object: #{value_object.value}")
         return Date.parse(value_object.value) if value_object.value
       end
       return value_object.value
@@ -100,11 +90,9 @@ module HasFields
     def write_attribute_with_field_behavior(attribute_name, value, scope = nil, scope_id = nil)
       return write_attribute_without_field_behavior(attribute_name, value) if scope.nil?
 
-      HasFields.log(:debug, "attribute_name(#{attribute_name}) value(#{value.inspect}) scope(#{scope}) scope_id(#{scope_id})")
       value_object = get_value_object(attribute_name, scope, scope_id)
       case value_object.field.style
       when "date"
-        HasFields.log(:debug, "date object: #{value["date(1i)"].to_i}, #{value["date(2i)"].to_i}, #{value["date(3i)"].to_i}")
         begin
           new_date = !value["date(1i)"].empty? && !value["date(2i)"].empty? && !value["date(3i)"].empty? ?
             Date.civil(value["date(1i)"].to_i, value["date(2i)"].to_i, value["date(3i)"].to_i) :

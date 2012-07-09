@@ -210,14 +210,5 @@ module HasFields
       }
     end
     
-    def HasFields.log(level, message)
-      if defined?(::Rails)
-        ::Rails.logger.send(level, message)
-      else
-        if ENV["debug"] == "debug"
-          STDOUT.puts("HasFields #{level}, #{message}")
-        end
-      end
-    end
   end
 end
