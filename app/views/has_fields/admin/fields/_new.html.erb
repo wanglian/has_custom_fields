@@ -14,7 +14,7 @@
       <p class="field text-field<%= e?(@field.errors.include?(:style)) %>">
         <label>
           <span class="field-label">Style</span>
-          <%= select_tag "field[style]", options_for_select(["checkbox","date","string"]) %>
+          <%= select_tag "field[style]", options_for_select(["checkbox","date","select","text"]) %>
         </label>
       </p>
       <p class="field text-field">

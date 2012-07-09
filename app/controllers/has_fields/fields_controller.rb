@@ -23,7 +23,7 @@ module HasFields
     def update
       if @fieldable.update_attributes(params[:fieldable])
         respond_to do |format|
-          format.html { redirect_to "/#{@fieldable.class.table_name}/#{@fieldable.id}/fields" }
+          format.html { redirect_to "/#{@fieldable.class.table_name}/#{@fieldable.id}/overview" }
           format.js { render "/has_fields/fields/_index", :locals => {:edit => true} }
         end
       else
