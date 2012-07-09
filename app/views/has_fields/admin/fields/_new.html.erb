@@ -1,0 +1,35 @@
+<div class="content-section info-section" id="infoSection">
+  <h4 class="content-section-head"><span>Edit Field</span></h4>
+  <%= common_error_messages(:field) %>
+  <form class="form" action="/advisors/fields/manage" method="post" autocomplete="off" novalidate="novalidate">
+    <div class="form-actions"><input type="submit" name="save" value="save" /></div>
+    <fieldset class="field-group field-info">
+      <legend class="field-group-head"><span>Field Info</span></legend>
+      <p class="field text-field<%= e?(@field.errors.include?(:name)) %>">
+        <label>
+          <span class="field-label">Name</span>
+          <input class="input" type="text" name="field[name]" value="<%= @field.name %>" />
+        </label>
+      </p>
+      <p class="field text-field<%= e?(@field.errors.include?(:style)) %>">
+        <label>
+          <span class="field-label">Style</span>
+          <%= select_tag "field[style]", options_for_select(["checkbox","date","string"]) %>
+        </label>
+      </p>
+      <p class="field text-field">
+        <label>
+          <span class="field-label">Scoped by</span>
+          <%= render :partial => "/has_fields/admin/fields/scope_select"%>
+        </label>
+      </p>
+    </fieldset>
+    <p class="form-actions">
+      <input name="_method" type="hidden" value="put" />
+      <input name="field[kind]" type="hidden" value="<%= @field.kind %>" />
+      <input  class="action save-action" type="submit" name="save" value="save" />
+      <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/advisors/has_lists/admin/fields">cancel</a>
+    </p>
+  </form>
+</div>

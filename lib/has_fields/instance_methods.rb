@@ -49,12 +49,12 @@ module HasFields
 
     def get_value_object(attribute_name, scope, scope_id)
       HasFields.log(:debug, "scope/id is: #{scope}/#{scope_id}")
-      options = field_options[self.class.name]
-      model_fkey = options[:foreign_key].singularize
-      fields_class = options[:fields_class_name]
-      values_class = options[:values_class_name]
-      value_field = options[:value_field]
-      fields_fkey = options[:fields_table_name].singularize.foreign_key
+      options = HasFields.config[self.class.name]
+      model_fkey = HasFields.config[self.class.name][:foreign_key].singularize
+      fields_class = HasFields.config[self.class.name][:fields_class_name]
+      values_class = HasFields.config[self.class.name][:values_class_name]
+      value_field = HasFields.config[self.class.name][:value_field]
+      fields_fkey = HasFields.config[self.class.name][:fields_table_name].singularize.foreign_key
       fields = Field
       values = FieldAttribute
       HasFields.log(:debug, "fkey is: #{fields_fkey}")
