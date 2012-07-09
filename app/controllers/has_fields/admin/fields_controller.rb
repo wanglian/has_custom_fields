@@ -39,7 +39,9 @@ module HasFields::Admin
         end
       else
         respond_to do |format|
-          format.html { render "/has_fields/fields/_new" }
+          klass = @resource.singularize.classify.constantize
+          @scope_groups = klass.scope_select_options
+          format.html { render :template => "/has_fields/admin/fields/_new", :layout => true }
           format.js { render "/has_fields/fields/_new", :locals => {:edit => true} }
         end
       end

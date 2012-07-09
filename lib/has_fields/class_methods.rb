@@ -77,7 +77,7 @@ module HasFields
     # It is expensive if there are a lot of objects and assumes the object has a field name or method,
     # so you might want to define your own /has_fields/admin/fields/scope_select partial
     def scope_select_options
-      scopes = Array(field_options[self.name][:scopes])
+      scopes = Array(HasFields.config[self.name][:scopes])
       scope_groups = []
       scopes.each_with_index do |s,index|
         scope_groups << [s.to_s.capitalize.pluralize]
@@ -140,8 +140,6 @@ module HasFields
         belongs_to klass.underscore.to_sym, :foreign_key => HasFields.config[klass][:foreign_key]
         
         alias_method :base, klass.underscore.to_sym
-        
-        validates_uniqueness_of HasFields.config[klass][:foreign_key], :scope => :field_id, :foreign_key => self.name.foreign_key
         
         def self.reloadable? #:nodoc:
           false
