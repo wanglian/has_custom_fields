@@ -16,6 +16,7 @@ module HasFields
   class InvalidScopeError < ActiveRecord::RecordNotFound; end
 
   ALLOWABLE_TYPES = ['select', 'checkbox', 'text', 'date']
+  mattr_accessor :config
 
   Object.const_set('TagFacade', Class.new(Object)).class_eval do
     def initialize(object_with_fields, scope, scope_id)
