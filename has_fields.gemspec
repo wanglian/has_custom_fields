@@ -29,13 +29,7 @@ Gem::Specification.new do |s|
     "lib/has_fields/engine.rb",
     "lib/has_fields/instance_methods.rb",
     "lib/has_fields/version.rb",
-    "lib/has_fields.rb",
-    "spec/db/database.yml",
-    "spec/db/schema.rb",
-    "spec/test_models/user.rb",
-    "spec/test_models/organization.rb",
-    "spec/has_fields_spec.rb",
-    "spec/spec_helper.rb"
+    "lib/has_fields.rb"
   ]
   s.homepage = %q{http://github.com/kylejginavan/has_fields}
   s.require_paths = ["lib"]
