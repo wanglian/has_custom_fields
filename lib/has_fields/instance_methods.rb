@@ -38,7 +38,7 @@ module HasFields
     def save_modified_field_attributes
       return if @save_attrs.nil?
       @save_attrs.each do |s|
-        if s.value.nil? || (s.respond_to?(:empty) && s.value.empty?)
+        if [s.string_value, s.date_value, s.boolean_value ].compact.empty? || (s.respond_to?(:empty) && s.value.empty?)
           s.destroy if !s.new_record?
         else
           s.save
@@ -77,10 +77,6 @@ module HasFields
     def read_attribute_with_field_behavior(attribute_name, scope = nil, scope_id = nil)
       return read_attribute_without_field_behavior(attribute_name) if scope.nil?
       value_object = get_value_object(attribute_name, scope, scope_id)
-      case value_object.field.style
-      when "date"
-        return Date.parse(value_object.value) if value_object.value
-      end
       return value_object.value
     end
 
@@ -100,9 +96,11 @@ module HasFields
         rescue ArgumentError
           new_date = nil
         end
-        value_object.send("value=", new_date) if value_object
+        value_object.send("date_value=", new_date) if value_object
+      when "checkbox"
+        value_object.send("boolean_value=", value) if value_object
       else
-        value_object.send("value=", value) if value_object
+        value_object.send("string_value=", value) if value_object        
       end
       @save_attrs ||= []
       @save_attrs << value_object
