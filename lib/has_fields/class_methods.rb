@@ -13,21 +13,21 @@ module HasFields
 
       # Attempt to load Field related class. If not create it
       begin
-        Object.const_get(Field)
+        Object.const_get("Field")
       rescue
         HasFields.create_associated_fields_class(base_class)
       end
 
       # Attempt to load FieldAttribute related class. If not create it
       begin
-        Object.const_get(FieldAttribute)
+        Object.const_get("FieldAttribute")
       rescue
         HasFields.create_associated_values_class(base_class)
       end
       
       # Attempt to load the FieldSelectOption related class. If not create it
       begin
-        Object.const_get(FieldSelectOption)
+        Object.const_get("FieldSelectOption")
       rescue
         HasFields.create_associated_select_options_class(base_class)
       end
