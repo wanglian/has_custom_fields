@@ -19,7 +19,6 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     "Gemfile",
-    "init.rb",
     "Rakefile",
     "LICENSE",
     "README.md",
@@ -27,8 +26,8 @@ Gem::Specification.new do |s|
     "has_fields.gemspec",
     "lib/has_fields/base.rb",
     "lib/has_fields/class_methods.rb",
+    "lib/has_fields/engine.rb",
     "lib/has_fields/instance_methods.rb",
-    "lib/has_fields/railtie.rb",
     "lib/has_fields/version.rb",
     "lib/has_fields.rb",
     "spec/db/database.yml",
