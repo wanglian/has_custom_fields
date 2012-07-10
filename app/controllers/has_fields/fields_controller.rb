@@ -3,7 +3,7 @@ module HasFields
     before_filter :authenticate_user!
     before_filter :load_fieldable, :except => [:manage]
     before_filter :load_fields, :only => [:index, :edit, :manage]
-    before_filter :set_resource
+    before_filter :load_resource
     layout "application"
 
     def index
@@ -46,10 +46,6 @@ module HasFields
       true
     end
 
-    def resource_object
-      instance_variable_get("@#{params[:resource].singularize}")
-    end
-
     def tab
       "fields"
     end
@@ -57,7 +53,7 @@ module HasFields
     protected
     def load_fieldable
       load(base_path)
-      @fieldable = resource_object
+      @fieldable = instance_variable_get("@#{params[:resource].singularize}")
     end
 
     def load_fields
@@ -65,7 +61,7 @@ module HasFields
       @organization_fields = Advisor.fields(current_user.organization)
     end
     
-    def set_resource
+    def load_resource
       @resource = params[:resource]
     end
   end

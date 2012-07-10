@@ -2,7 +2,7 @@ module HasFields::Admin
   class FieldsController < ApplicationController
     before_filter :authenticate_user!
     before_filter :load_fields, :only => [:index, :edit, :manage]
-    before_filter :set_resource
+    before_filter :load_resource
     layout "application"
 
     def index
