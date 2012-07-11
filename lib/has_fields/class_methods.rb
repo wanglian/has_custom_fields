@@ -75,7 +75,7 @@ module HasFields
     
     # Builds an array of objects that a field can be scoped by, to be used in a grouped select box in the form.
     # It is expensive if there are a lot of objects and assumes the object has a field name or method,
-    # so you might want to define your own /has_fields/admin/fields/scope_select partial
+    # so you might want to define your own /has_fields/manage/fields/scope_select partial
     def scope_select_options
       scopes = Array(HasFields.config[self.name][:scopes])
       scope_groups = []

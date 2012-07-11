@@ -20,7 +20,7 @@
       <p class="field text-field">
         <label>
           <span class="field-label">Scoped by</span>
-          <%= render :partial => "/has_fields/admin/fields/scope_select"%>
+          <%= render :partial => "/has_fields/manage/fields/scope_select"%>
         </label>
       </p>
     </fieldset>
@@ -29,7 +29,7 @@
       <input name="field[kind]" type="hidden" value="<%= @field.kind %>" />
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
-      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/advisors/has_lists/admin/fields">cancel</a>
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/advisors/fields/manage">cancel</a>
     </p>
   </form>
 </div>
