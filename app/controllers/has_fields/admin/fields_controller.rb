@@ -1,7 +1,7 @@
 module HasFields::Admin
   class FieldsController < ApplicationController
     before_filter :authenticate_user!
-    before_filter :set_resource
+    before_filter :load_resource
     before_filter :load_fields, :only => [:index, :edit, :manage]
     layout "application"
 
@@ -79,7 +79,7 @@ module HasFields::Admin
       end
     end
     
-    def set_resource
+    def load_resource
       @resource = params[:resource]
     end
   end
