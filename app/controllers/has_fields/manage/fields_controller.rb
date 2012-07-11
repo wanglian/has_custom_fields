@@ -1,22 +1,22 @@
-module HasFields::Admin
+module HasFields::Manage
   class FieldsController < ApplicationController
     before_filter :authenticate_user!
-    before_filter :load_fields, :only => [:index, :edit, :manage]
     before_filter :load_resource
+    before_filter :load_fields, :only => [:index, :edit, :manage]
     layout "application"
 
     def index
       respond_to do |format|
-        format.html { render "/has_fields/admin/fields/_index", :layout => true }
-        format.js { render "/has_fields/fields/_index" }
+        format.html { render "/has_fields/manage/fields/_index", :layout => true }
+        format.js { render "/has_fields/manage/fields/_index" }
       end
     end
     
     def show
       @field = HasFields::Field.find(params[:id])
       respond_to do |format|
-        format.html { render "/has_fields/admin/fields/_show", :layout => true }
-        format.js { render "/has_fields/fields/_show" }
+        format.html { render "/has_fields/manage/fields/_show", :layout => true }
+        format.js { render "/has_fields/manage/fields/_show" }
       end
     end
     
@@ -25,8 +25,8 @@ module HasFields::Admin
       @field = HasFields::Field.new(:kind => klass)
       @scope_groups = klass.scope_select_options
       respond_to do |format|
-        format.html { render "/has_fields/admin/fields/_new", :layout => true }
-        format.js { render "/has_fields/fields/_new" }
+        format.html { render "/has_fields/manage/fields/_new", :layout => true }
+        format.js { render "/has_fields/manage/fields/_new" }
       end
     end
     
@@ -35,14 +35,14 @@ module HasFields::Admin
       if @field.save
         respond_to do |format|
           format.html { redirect_to "/advisors/fields/manage/#{@field.id}/" }
-          format.js { render "/has_fields/fields/_index", :locals => {:edit => true} }
+          format.js { render "/has_fields/manage/fields/_index", :locals => {:edit => true} }
         end
       else
         respond_to do |format|
           klass = @resource.singularize.classify.constantize
           @scope_groups = klass.scope_select_options
-          format.html { render :template => "/has_fields/admin/fields/_new", :layout => true }
-          format.js { render "/has_fields/fields/_new", :locals => {:edit => true} }
+          format.html { render :template => "/has_fields/manage/fields/_new", :layout => true }
+          format.js { render "/has_fields/manage/fields/_new", :locals => {:edit => true} }
         end
       end
     end
@@ -50,8 +50,8 @@ module HasFields::Admin
     def edit
       @field = HasFields::Field.find(params[:id])
       respond_to do |format|
-        format.html { render "/has_fields/admin/fields/_edit", :layout => true }
-        format.js { render "/has_fields/fields/_edit" }
+        format.html { render "/has_fields/manage/fields/_edit", :layout => true }
+        format.js { render "/has_fields/manage/fields/_edit" }
       end
     end
     
@@ -60,12 +60,12 @@ module HasFields::Admin
       if @field.update_attributes(params[:field])
         respond_to do |format|
           format.html { redirect_to "/advisors/fields/manage/#{@field.id}/" }
-          format.js { render "/has_fields/fields/_index", :locals => {:edit => true} }
+          format.js { render "/has_fields/fields/manage/_index", :locals => {:edit => true} }
         end
       else
         respond_to do |format|
-          format.html { render "/has_fields/fields/_edit" }
-          format.js { render "/has_fields/fields/_edit", :locals => {:edit => true} }
+          format.html { render "/has_fields/fields/manage/_edit" }
+          format.js { render "/has_fields/fields/manage/_edit", :locals => {:edit => true} }
         end
       end
     end
@@ -73,11 +73,13 @@ module HasFields::Admin
     protected
 
     def load_fields
-      @user_fields = Advisor.fields(current_user)
-      @organization_fields = Advisor.fields(current_user.organization)
+      @fields = {}
+      HasFields.config[@resource.classify][:scopes].each do |scope|
+        @fields[scope] = @resource.classify.constantize.fields(scope == :user ? current_user : current_user.send(scope))
+      end
     end
     
-    def set_resource
+    def load_resource
       @resource = params[:resource]
     end
   end

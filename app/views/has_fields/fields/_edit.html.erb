@@ -3,26 +3,18 @@
   <%= common_error_messages(@fieldable.class.table_name.to_sym) %>
   <form class="form" action="/<%= @fieldable.class.table_name %>/<%= @fieldable.id %>/fields" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
-    <fieldset class="field-group entity-fields organization-fields">
-      <legend class="field-group-head"><span>Organization</span></legend>
-      <% if @organization_fields.empty? %>
-      <p>none</p>
-      <% else %>
-      <% @organization_fields.each do |organization_field| %>
-      <%= render :partial => "/has_fields/fields/field", :formats => [:html], :locals => {:field => organization_field, :entity => @fieldable, :scope => :organization, :scope_id => current_user.organization.id} %>
-      <% end %>
-      <% end %>
-    </fieldset>
-    <fieldset class="field-group entity-fields user-fields">
-      <legend class="field-group-head"><span>User</span></legend>
-      <% if @user_fields.empty? %>
-      <p>none</p>
-      <% else %>
-      <% @user_fields.each do |user_field| %>
-      <%= render :partial => "/fields/field", :formats => [:html], :locals => {:field => user_field, :entity => @fieldable, :scope => :user, :scope_id => current_user.id} %>
-      <% end %>
-      <% end %>
-    </fieldset>
+    <% @fields.each do |k,v| %>
+      <fieldset class="field-group entity-fields <%= k.to_s %>-fields">
+        <legend class="field-group-head"><span><%= k.to_s.titleize %></span></legend>
+        <% if v.empty? %>
+          <p>No fields associated with the <%= k.to_s %></p>
+        <% else %>
+          <% v.each do |field| %>
+            <%= render :partial => "/has_fields/fields/field", :formats => [:html], :locals => {:field => field, :entity => @fieldable, :scope => k, :scope_id => k==:user ? current_user.id : current_user.send(k).id} %>
+          <% end %>
+        <% end %>
+      </fieldset>
+    <% end %>
     <p class="form-actions">
       <input name="_method" type="hidden" value="put" />
       <input  class="action save-action" type="submit" name="save" value="save" />
