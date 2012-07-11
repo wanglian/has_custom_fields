@@ -2,8 +2,9 @@ module HasFields
   class FieldsController < ApplicationController
     before_filter :authenticate_user!
     before_filter :load_fieldable, :except => [:manage]
-    before_filter :load_fields, :only => [:index, :edit, :manage]
     before_filter :set_resource
+    before_filter :load_fields, :only => [:index, :edit, :manage]
+    
     layout "application"
 
     def index
@@ -61,8 +62,10 @@ module HasFields
     end
 
     def load_fields
-      @user_fields = Advisor.fields(current_user)
-      @organization_fields = Advisor.fields(current_user.organization)
+      @fields = {}
+      HasFields.config[@resource.classify][:scopes].each do |scope|
+        @fields[scope] = @resource.classify.constantize.fields(scope == :user ? current_user : current_user.send(scope))
+      end
     end
     
     def set_resource
