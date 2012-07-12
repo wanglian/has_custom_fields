@@ -11,7 +11,7 @@ module HasFields::Manage
         format.js { render "/has_fields/manage/fields/_index" }
       end
     end
-    
+
     def show
       @field = HasFields::Field.find(params[:id])
       respond_to do |format|
