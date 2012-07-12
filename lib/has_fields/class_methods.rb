@@ -72,19 +72,6 @@ module HasFields
         raise InvalidScopeError, "Class #{self.name} does not have scope :#{scope.class.name.downcase} defined for has_fields"
       end
     end
-    
-    # Builds an array of objects that a field can be scoped by, to be used in a grouped select box in the form.
-    # It is expensive if there are a lot of objects and assumes the object has a field name or method,
-    # so you might want to define your own /has_fields/manage/fields/scope_select partial
-    def scope_select_options
-      scopes = Array(HasFields.config[self.name][:scopes])
-      scope_groups = []
-      scopes.each_with_index do |s,index|
-        scope_groups << [s.to_s.capitalize.pluralize]
-        scope_groups[index] << s.to_s.classify.constantize.all.sort_by(&:name).collect{|s| [s.name,"#{s.class}_#{s.id}"]}
-      end
-      scope_groups
-    end
 
     private
     
@@ -95,7 +82,7 @@ module HasFields
           has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :foreign_key => :field_id
           has_many :select_options, :class_name => "::HasFields::FieldSelectOption", :foreign_key => :field_id
           belongs_to klass.underscore.to_sym
-          
+          scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
           validates_presence_of :name, :message => 'Please specify the field name.'
           validates_presence_of :select_options_data, :if => proc {|p| p.style == "select"}, :message => "You must enter options for the selection."
