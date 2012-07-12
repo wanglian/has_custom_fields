@@ -57,7 +57,6 @@ module HasFields::Manage
     
     def update
       @field = HasFields::Field.find(params[:id])
-      @field.send("#{@scope}_id=",@scope_object.id)
       if @field.update_attributes(params[:field])
         respond_to do |format|
           format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage/#{@field.id}/" }
@@ -80,7 +79,13 @@ module HasFields::Manage
     def load_resource_and_scope
       @resource = params[:resource]
       @scope = params[:scope].singularize
+      # the scope object should be either the current user, a user from their org, or their org.
       @scope_object = @scope.classify.constantize.find(params[:scope_id])
+      # to stop users accessing fields form other orgs
+      if (@scope == "user" && @scope_object.organization_id != current_user.organization_id) ||
+         (@scope_object.organization_id != current_user.organization_id)
+        redirect_to "/"
+      end
     end
   end
 end
