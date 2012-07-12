@@ -1,7 +1,7 @@
 module HasFields::Manage
   class FieldsController < HasFields::ApplicationController
     before_filter :authenticate_user!
-    before_filter :load_resource
+    before_filter :load_resource_and_scope
     before_filter :load_fields, :only => [:index, :edit, :manage]
     layout "application"
 
@@ -31,9 +31,10 @@ module HasFields::Manage
     
     def create
       @field = HasFields::Field.new(params[:field])
+      @field.send("#{@scope}_id=",@scope_object.id)
       if @field.save
         respond_to do |format|
-          format.html { redirect_to "/#{@field.scoped_by_class}/fields/#{@resource}/manage/#{@field.id}/" }
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage/#{@field.id}/" }
           format.js { render "/has_fields/manage/fields/_index", :locals => {:edit => true} }
         end
       else
@@ -56,9 +57,10 @@ module HasFields::Manage
     
     def update
       @field = HasFields::Field.find(params[:id])
+      @field.send("#{@scope}_id=",@scope_object.id)
       if @field.update_attributes(params[:field])
         respond_to do |format|
-          format.html { redirect_to "/#{@field.scoped_by_class}/fields/#{@resource}/manage/#{@field.id}/" }
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage/#{@field.id}/" }
           format.js { render "/has_fields/fields/manage/_index", :locals => {:edit => true} }
         end
       else
@@ -72,12 +74,13 @@ module HasFields::Manage
     protected
 
     def load_fields
-      @fields = @resource.classify.constantize.fields(@scope == 'user' ? current_user : current_user.send(@scope))
+      @fields = @resource.classify.constantize.fields(@scope_object)
     end
     
-    def load_resource
+    def load_resource_and_scope
       @resource = params[:resource]
-      @scope = params[:scope]
+      @scope = params[:scope].singularize
+      @scope_object = @scope.classify.constantize.find(params[:scope_id])
     end
   end
 end

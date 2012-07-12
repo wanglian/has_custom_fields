@@ -17,7 +17,7 @@
             <% @fields.each do |field| %>
               <tr>
                 <td>
-                  <%= link_to(field.name, "/#{field.scoped_by_class}/fields/#{@resource}/manage/#{field.id}") %>
+                  <%= link_to(field.name, "/#{field.scoped_by_class.pluralize}/#{field.send(@scope+'_id')}/fields/#{@resource}/manage/#{field.id}") %>
                 </td>
                 <td>
                   <%= field.style %>
@@ -32,6 +32,6 @@
       <% end %>
     </div>
   </div>
-<%= link_to("New Field", "/#{@scope}/fields/#{@resource}/manage/new") %>
+<%= link_to("New Field", "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage/new") %>
 </div>
 
