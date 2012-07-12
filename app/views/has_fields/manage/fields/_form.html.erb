@@ -1,12 +1,12 @@
 <fieldset class="field-group field-info">
   <legend class="field-group-head"><span>Field Info</span></legend>
-  <p class="field text-field code-name<%= e?(@field.errors.include?(:name)) %>">
+  <p class="field text-field name">
     <label>
       <span class="field-label">Name</span>
       <input class="input" type="text" name="field[name]" value="<%= @field.name %>" />
     </label>
   </p>
-  <p class="field text-field code-name<%= e?(@field.errors.include?(:style)) %>">
+  <p class="field text-field style">
     <label>
       <span class="field-label">Style</span>
       <%= select_tag "style", options_for_select(["checkbox","date","string"], @field.style) %>

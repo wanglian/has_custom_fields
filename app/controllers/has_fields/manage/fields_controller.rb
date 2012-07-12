@@ -1,5 +1,5 @@
 module HasFields::Manage
-  class FieldsController < ApplicationController
+  class FieldsController < HasFields::ApplicationController
     before_filter :authenticate_user!
     before_filter :load_resource
     before_filter :load_fields, :only => [:index, :edit, :manage]
@@ -23,7 +23,6 @@ module HasFields::Manage
     def new
       klass = @resource.singularize.classify.constantize
       @field = HasFields::Field.new(:kind => klass)
-      @scope_groups = klass.scope_select_options
       respond_to do |format|
         format.html { render "/has_fields/manage/fields/_new", :layout => true }
         format.js { render "/has_fields/manage/fields/_new" }
@@ -34,7 +33,7 @@ module HasFields::Manage
       @field = HasFields::Field.new(params[:field])
       if @field.save
         respond_to do |format|
-          format.html { redirect_to "/advisors/fields/manage/#{@field.id}/" }
+          format.html { redirect_to "/#{@field.scoped_by_class}/fields/#{@resource}/manage/#{@field.id}/" }
           format.js { render "/has_fields/manage/fields/_index", :locals => {:edit => true} }
         end
       else
@@ -59,7 +58,7 @@ module HasFields::Manage
       @field = HasFields::Field.find(params[:id])
       if @field.update_attributes(params[:field])
         respond_to do |format|
-          format.html { redirect_to "/advisors/fields/manage/#{@field.id}/" }
+          format.html { redirect_to "/#{@field.scoped_by_class}/fields/#{@resource}/manage/#{@field.id}/" }
           format.js { render "/has_fields/fields/manage/_index", :locals => {:edit => true} }
         end
       else
@@ -69,18 +68,16 @@ module HasFields::Manage
         end
       end
     end
-
+    
     protected
 
     def load_fields
-      @fields = {}
-      HasFields.config[@resource.classify][:scopes].each do |scope|
-        @fields[scope] = @resource.classify.constantize.fields(scope == :user ? current_user : current_user.send(scope))
-      end
+      @fields = @resource.classify.constantize.fields(@scope == 'user' ? current_user : current_user.send(@scope))
     end
     
     def load_resource
       @resource = params[:resource]
+      @scope = params[:scope]
     end
   end
 end
