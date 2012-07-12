@@ -1,39 +1,37 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
   <div class="form">
-    <% @fields.each do |k,v| %>
-      <div class="field-group entity-fields <%= k %>-fields">
-        <h5 class="field-group-head"><span><%= k.to_s.titleize %> Fields</span></h5>
-        <% if v.empty? %>
+    <div class="field-group entity-fields <%= @resource %>-fields">
+      <h5 class="field-group-head"><span><%= @resource.titleize %> Fields for <%= (@scope == 'user' ? current_user : current_user.send(@scope)).try(:name) %></span></h5>
+      <% if @fields.empty? %>
           <p>none</p>
-        <% else %>
-          <div class="records">
-            <table>
+      <% else %>
+        <div class="records">
+          <table>
+            <tr>
+              <th>Name</th>
+              <th>Style</th>
+              <th>Scoped by</th>
+              <th></th>
+            </tr>
+            <% @fields.each do |field| %>
               <tr>
-                <th>Name</th>
-                <th>Style</th>
-                <th>Scoped by</th>
-                <th></th>
+                <td>
+                  <%= link_to(field.name, "/#{field.scoped_by_class.pluralize}/#{field.send(@scope+'_id')}/fields/#{@resource}/manage/#{field.id}") %>
+                </td>
+                <td>
+                  <%= field.style %>
+                </td>
+                <td>
+                  <%= field.scoped_by_class %>
+                </td>
               </tr>
-              <% v.each do |field| %>
-                <tr>
-                  <td>
-                    <%= link_to(field.name, "/advisors/fields/manage/#{field.id}") %>
-                  </td>
-                  <td>
-                    <%= field.style %>
-                  </td>
-                  <td>
-                    <%= field.scoped_by_class %>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
+            <% end %>
+          </table>
+        </div>
+      <% end %>
+    </div>
   </div>
-  <%= link_to("New Field", "/advisors/fields/manage/new") %>
+<%= link_to("New Field", "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage/new") %>
 </div>
 

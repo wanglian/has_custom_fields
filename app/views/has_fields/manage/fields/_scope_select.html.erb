@@ -1,5 +1,0 @@
-<% if @scope_groups.any? %>
-  <%= select_tag "field[scope_id]", grouped_options_for_select(@scope_groups) %>
-<% else %>
-  No scopes available.
-<% end %>
