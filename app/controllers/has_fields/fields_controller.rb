@@ -53,7 +53,7 @@ module HasFields
 
     protected
     def load_fieldable
-      load_bastard(params[:resource])
+      load(params[:resource])
       @fieldable = instance_variable_get("@#{params[:resource].singularize}")
     end
 
