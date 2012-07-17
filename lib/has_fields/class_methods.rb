@@ -97,6 +97,11 @@ module HasFields
             self.send("select_options")
           end
           
+          def self.scoped_by(scope_object)
+            foreign_key = "#{scope_object.class.name.downcase}_id"
+            where(foreign_key => scope_object.id)
+          end
+          
           def scoped_by_class
             attributes.detect{|k,v| k.match(/_id/) && !v.nil?}[0].gsub("_id","")
           end

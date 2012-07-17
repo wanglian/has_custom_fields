@@ -1,37 +1,44 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
   <div class="form">
-    <div class="field-group entity-fields <%= @resource %>-fields">
-      <h5 class="field-group-head"><span><%= @resource.titleize %> Fields for <%= (@scope == 'user' ? current_user : current_user.send(@scope)).try(:name) %></span></h5>
-      <% if @fields.empty? %>
-          <p>none</p>
-      <% else %>
-        <div class="records">
-          <table>
-            <tr>
-              <th>Name</th>
-              <th>Style</th>
-              <th>Scoped by</th>
-              <th></th>
-            </tr>
-            <% @fields.each do |field| %>
+    <div class="field-group entity-fields <%= @scope.titleize %>-fields">
+      <h5 class="field-group-head"><span><%= @scope_object.try(:name) %> Fields</span></h5>
+      <ul class="content-links" id="contentLinks">
+        <% @fields_by_resource.each do |key,value|%>
+          <li class="link<%= @fields_by_resource.keys.index(key) == 0 ? ' selected' : ''%>">
+            <%= link_to key.titleize, "##{key}Section"%>
+          </li>
+        <% end %>
+      </ul>
+      <% @fields_by_resource.each do |key,value| %>
+        <div class="content-section" id="<%= key %>Section">  
+          <div class="records">
+            <table>
               <tr>
-                <td>
-                  <%= link_to(field.name, "/#{field.scoped_by_class.pluralize}/#{field.send(@scope+'_id')}/fields/#{@resource}/manage/#{field.id}") %>
-                </td>
-                <td>
-                  <%= field.style %>
-                </td>
-                <td>
-                  <%= field.scoped_by_class %>
-                </td>
+                <th>Name</th>
+                <th>Style</th>
+                <th>Scoped by</th>
+                <th></th>
               </tr>
-            <% end %>
-          </table>
+              <% value.each do |field| %>
+                <tr>
+                  <td>
+                    <%= link_to(field.name, "/#{field.scoped_by_class.pluralize}/#{field.send(@scope+'_id')}/fields/manage/#{field.id}") %>
+                  </td>
+                  <td>
+                    <%= field.style %>
+                  </td>
+                  <td>
+                    <%= field.scoped_by_class %>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
+          </div>
         </div>
       <% end %>
     </div>
   </div>
-<%= link_to("New Field", "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage/new") %>
+<%= link_to("New Field", "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/new") %>
 </div>
 

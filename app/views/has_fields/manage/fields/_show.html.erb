@@ -1,4 +1,4 @@
-<%= link_to "back", "/#{@field.scoped_by_class.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage" %>
+<%= link_to "back", "/#{@field.scoped_by_class.pluralize}/#{@scope_object.id}/fields/manage" %>
 <div class="content-section info-section" id="infoSection">
   <p>
     <strong>
@@ -31,4 +31,4 @@
     <%= @field.field_attributes.count %>
   </p>
 </div>
-<%= link_to("Edit", "/#{@field.scoped_by_class.pluralize}/#{@scope_object.id}/fields/advisors/manage/#{@field.id}/edit") %>
+<%= link_to("Edit", "/#{@field.scoped_by_class.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}/edit") %>
