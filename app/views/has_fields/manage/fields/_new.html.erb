@@ -1,6 +1,7 @@
+<%= @field.errors.inspect %>
 <div class="content-section info-section" id="infoSection">
   <h4 class="content-section-head"><span>Edit Field</span></h4>
-  <form class="form" action="<%= "/#{@scope.pluralize}/#{@scope_object.id}/fields/#{@resource}/manage"%>" method="post" autocomplete="off" novalidate="novalidate">
+  <form class="form" action="<%= "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage"%>" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <fieldset class="field-group field-info">
       <legend class="field-group-head"><span>Field Info</span></legend>
@@ -16,12 +17,17 @@
           <%= select_tag "field[style]", options_for_select(["checkbox","date","select","text"]) %>
         </label>
       </p>
+      <p class="field text-field">
+        <label>
+          <span class="field-label">Applies to</span>
+          <%= select_tag "field[kind]", options_for_select(HasFields.config.keys.sort) %>
+        </label>
+      </p>
     </fieldset>
     <p class="form-actions">
-      <input name="field[kind]" type="hidden" value="<%= @field.kind %>" />
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
-      <a class="cancel-link" title="Close form and discard any unsaved changes" href="<%= "/#{@scope}/#{@scope_object.id}/fields/#{@resource}/manage"%>">cancel</a>
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="<%= "/#{@scope}/#{@scope_object.id}/fields/manage"%>">cancel</a>
     </p>
   </form>
 </div>
