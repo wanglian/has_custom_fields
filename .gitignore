@@ -1,5 +1,6 @@
 .rvmrc
 *.sqlite3
+*.tmproj
 pkg
 Gemfile.lock
 *.gem
