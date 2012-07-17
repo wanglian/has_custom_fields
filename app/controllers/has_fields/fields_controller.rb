@@ -63,9 +63,14 @@ module HasFields
         @fields[scope] = @resource.classify.constantize.fields(scope == :user ? current_user : current_user.send(scope))
       end
     end
-    
+
     def load_resource
       @resource = params[:resource]
+    end
+    
+    # TODO: remove me, added this because it fails in prod "undefined local variable or method `controller' for #<HasFields::FieldsController:0x0000000814fef8>
+    def base_path
+      self.base_path ? self.base_path : self.controller_name
     end
   end
 end
