@@ -53,7 +53,7 @@ module HasFields
 
     protected
     def load_fieldable
-      load(base_path)
+      load(params[:resource])
       @fieldable = instance_variable_get("@#{params[:resource].singularize}")
     end
 
@@ -66,11 +66,6 @@ module HasFields
 
     def load_resource
       @resource = params[:resource]
-    end
-    
-    # TODO: remove me, added this because it fails in prod "undefined local variable or method `controller' for #<HasFields::FieldsController:0x0000000814fef8>
-    def base_path
-      self.base_path ? self.base_path : self.controller_name
     end
   end
 end
