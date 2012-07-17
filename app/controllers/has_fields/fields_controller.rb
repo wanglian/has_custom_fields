@@ -2,7 +2,7 @@ module HasFields
   class FieldsController < ApplicationController
     before_filter :authenticate_user!
     before_filter :load_fieldable, :except => [:manage]
-    before_filter :load_resource
+    before_filter :set_resource
     before_filter :load_fields, :only => [:index, :edit, :manage]
     
     layout "application"
@@ -53,7 +53,7 @@ module HasFields
 
     protected
     def load_fieldable
-      # FIXME: load_resource(params[:resource])
+      load_resource(params[:resource])
       @fieldable = instance_variable_get("@#{params[:resource].singularize}")
     end
 
@@ -64,7 +64,7 @@ module HasFields
       end
     end
 
-    def load_resource
+    def set_resource
       @resource = params[:resource]
     end
   end
