@@ -50,19 +50,11 @@ module HasFields
     def tab
       "fields"
     end
-
-    def add_partial
-      nil
-    end
     
-    def resource
-      @fieldable
-    end
-
     protected
     def load_fieldable
-      @fieldable = @resource.classify.constantize.find(params[:id])
-      eval("@#{@resource.singularize} = @fieldable")
+      load_resource(params[:resource])
+      @fieldable = instance_variable_get("@#{params[:resource].singularize}")
     end
 
     def load_fields
