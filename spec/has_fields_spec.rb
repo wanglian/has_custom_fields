@@ -85,7 +85,7 @@ describe 'Has Fields' do
       end
       
       it "returns an array of select options" do
-        select_options = User.fields(@org).last.select_options.map(&:option)
+        select_options = User.fields(@org).last.field_select_options.map(&:option)
         select_options.should == ["CatA","CatB","CatC"]
       end
       
@@ -95,8 +95,8 @@ describe 'Has Fields' do
       end
       
       it "should set up the has_many and belongs_to relationships" do
-        User.fields(@org).first.respond_to?(:select_options).should == true
-        User.fields(@org).last.select_options.first.respond_to?(:field).should == true
+        User.fields(@org).first.respond_to?(:field_select_options).should == true
+        User.fields(@org).last.field_select_options.first.respond_to?(:field).should == true
       end
 
     end

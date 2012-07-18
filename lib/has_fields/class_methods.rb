@@ -80,7 +80,7 @@ module HasFields
         Class.new(::HasFields::Base)).class_eval do
           self.table_name = HasFields.config[klass][:fields_table_name]
           has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :foreign_key => :field_id
-          has_many :select_options, :class_name => "::HasFields::FieldSelectOption", :foreign_key => :field_id
+          has_many :field_select_options, :class_name => "::HasFields::FieldSelectOption", :foreign_key => :field_id
           belongs_to klass.underscore.to_sym
           scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
@@ -94,7 +94,7 @@ module HasFields
           end
           
           def related_select_options
-            self.send("select_options")
+            self.send("field_select_options")
           end
           
           def self.scoped_by(scope_object)
@@ -161,9 +161,9 @@ module HasFields
           raise "Couldn't load field" if !field
 
           if field.style == "select" && !self.value.blank?
-            if field.select_options.find{|f| f == self.value}.nil?
-              raise "Invalid option: #{self.value}.  Should be one of #{field.select_options.join(", ")}"
-              self.errors.add_to_base("Invalid option: #{self.value}.  Should be one of #{field.select_options.join(", ")}")
+            if field.field_select_options.find{|f| f == self.value}.nil?
+              raise "Invalid option: #{self.value}.  Should be one of #{field.field_select_options.join(", ")}"
+              self.errors.add_to_base("Invalid option: #{self.value}.  Should be one of #{field.field_select_options.join(", ")}")
               return false
             end
           end
@@ -180,7 +180,7 @@ module HasFields
           belongs_to :field, :class_name => "::HasFields::Field"
 
           validates_presence_of :option, :message => "The select option cannot be blank."
-          validates_exclusion_of :option, :in => Proc.new{|o| o.field.select_options.map{|opt| opt.option } }, :message => "There should not be any duplicate select options."
+          validates_exclusion_of :option, :in => Proc.new{|o| o.field.field_select_options.map{|opt| opt.option } }, :message => "There should not be any duplicate select options."
         end
       ::HasFields.const_set("FieldSelectOption", Object.const_get("FieldSelectOption"))
     end
