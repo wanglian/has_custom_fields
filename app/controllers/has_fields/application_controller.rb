@@ -1,2 +1,4 @@
-class HasFields::ApplicationController < ActionController::Base
+module HasFields
+  class ApplicationController < ::ApplicationController
+  end
 end
