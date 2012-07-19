@@ -35,7 +35,7 @@ module HasFields
         end
       end
     end
-    
+
     def manage
       respond_to do |format|
         format.html { render "/has_fields/fields/_manage", :layout => true }

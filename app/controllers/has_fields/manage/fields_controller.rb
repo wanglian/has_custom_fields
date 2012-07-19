@@ -66,17 +66,23 @@ module HasFields::Manage
         end
       end
     end
-    
+
+    def tab
+      "fields"
+    end
+
     protected
 
     def load_fields
       # find all fields applicable to the current user that are scoped by the supplied scope
-      @fields_by_resource = Field.scoped_by(@scope_object).group_by(&:kind)
+      fields_by_resource = Field.scoped_by(@scope_object).group_by(&:kind)
+      @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", fields_by_resource[r] || [])}
     end
     
     def load_resource_and_scope
-      
+      @resources = HasFields.config.keys
       @scope = params[:scope].singularize
+      load_resource(@scope)
       # the scope object should be either the current user, a user from their org, or their org.
       @scope_object = @scope.classify.constantize.find(params[:scope_id])
       # to stop users accessing fields form other orgs
