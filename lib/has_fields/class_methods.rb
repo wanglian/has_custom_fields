@@ -84,8 +84,6 @@ module HasFields
           belongs_to klass.underscore.to_sym
           scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
-          validates_presence_of :name, :message => 'Please specify the field name.'
-          validates_presence_of :select_options_data, :if => proc {|p| p.style == "select"}, :message => "You must enter options for the selection."
           validates_uniqueness_of :name, :scope => HasFields.config[klass][:scopes].map { |f| f.to_s.foreign_key }, :message => "The field name is already taken."
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(", ")}."
           
@@ -116,7 +114,7 @@ module HasFields
           end
           
           def select_options_data
-            (self.related_select_options.collect{|o| o.option } || [])
+            field_select_options.map{|o| o.option }
           end
 
         end
@@ -127,7 +125,8 @@ module HasFields
       Object.const_set(HasFields.config[klass][:attributes_class_name],
       Class.new(ActiveRecord::Base)).class_eval do
         self.table_name = HasFields.config[klass][:attributes_table_name]
-      
+        validates_presence_of :field_id
+        validates_inclusion_of :value, :in => Proc.new{|v| v.field.field_select_options.map{|opt| opt.option }}, :if => Proc.new{|o| o.field && o.field.style == "select" }
         belongs_to :field, :class_name => "::HasFields::Field"
         belongs_to klass.underscore.to_sym, :foreign_key => HasFields.config[klass][:foreign_key]
         
@@ -146,6 +145,7 @@ module HasFields
         end
         
         def data_type_from_field_style
+          return "string" unless field
           case field.style
           when "date"
             "date"
@@ -159,7 +159,6 @@ module HasFields
         def validate
           field = self.field
           raise "Couldn't load field" if !field
-
           if field.style == "select" && !self.value.blank?
             if field.field_select_options.find{|f| f == self.value}.nil?
               raise "Invalid option: #{self.value}.  Should be one of #{field.field_select_options.join(", ")}"
@@ -180,7 +179,7 @@ module HasFields
           belongs_to :field, :class_name => "::HasFields::Field"
 
           validates_presence_of :option, :message => "The select option cannot be blank."
-          validates_exclusion_of :option, :in => Proc.new{|o| o.field.field_select_options.map{|opt| opt.option } }, :message => "There should not be any duplicate select options."
+          validates_exclusion_of :option, :in => Proc.new{|o| o.field ? o.field.field_select_options.map{|opt| opt.option } : []}, :message => "There should not be any duplicate select options."
         end
       ::HasFields.const_set("FieldSelectOption", Object.const_get("FieldSelectOption"))
     end

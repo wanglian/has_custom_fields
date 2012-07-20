@@ -5,9 +5,9 @@ class CreateFieldsForUser < ActiveRecord::Migration
       t.string :style, :null => false, :limit => 15
       t.string :kind
       t.integer :organization_id
+      t.integer :user_id
       t.timestamps
     end
-    add_index :fields, ["organization_id", "name"], :unique => true
     
     create_table(:field_attributes) do |t|
       t.integer :user_id, :null => false

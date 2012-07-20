@@ -5,7 +5,7 @@ Bundler.require :default, :development
 
 Combustion.initialize!
 
-#require 'rspec/rails'
+Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 
 RSpec.configure do |config|
 
