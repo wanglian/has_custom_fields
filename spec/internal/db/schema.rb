@@ -8,4 +8,9 @@ ActiveRecord::Schema.define do
   create_table :organizations, :force => true do |t|
     t.string :name
   end
+  
+  create_table :advisors, :force => true do |t|
+    t.string :name
+    t.integer :organization_id
+  end
 end
