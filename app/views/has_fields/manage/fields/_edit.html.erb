@@ -15,7 +15,7 @@
       <input name="_method" type="hidden" value="put" />
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
-      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage/#{@field.id}"%>">cancel</a>
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage" %>">cancel</a>
     </p>
   </form>
 </div>

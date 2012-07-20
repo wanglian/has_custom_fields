@@ -1,0 +1,31 @@
+<div class="records">
+  <table>
+    <tr>
+      <th>Name</th>
+      <th>Style</th>
+      <th>Scoped by</th>
+    </tr>
+    <% if instance_variable_get("@#{records}").empty? %>
+    <tr>
+      <td colspan="3" class="empty">
+        No results round.
+      </td>
+    </tr>
+    <% else %>
+    <% instance_variable_get("@#{records}").each do |field| %>
+    <tr>
+      <td>
+        <span class="edit-record"><a href="/<%= field.scoped_by_class.pluralize %>/<%= field.send(@scope + "_id") %>/fields/manage/<%= field.id %>/edit">Edit</a></span>&nbsp;
+        <%= field.name %>
+      </td>
+      <td>
+        <%= field.style %>
+      </td>
+      <td>
+        <%= field.scoped_by_class %>
+      </td>
+    </tr>
+    <% end %>
+    <% end %>
+  </table>
+</div>
