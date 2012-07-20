@@ -33,7 +33,7 @@ module HasFields::Manage
       @field.send("#{@scope}_id=",@scope_object.id)
       if @field.save
         respond_to do |format|
-          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}/" }
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}" }
           format.js { render "/has_fields/manage/fields/_index", :locals => {:edit => true} }
         end
       else
@@ -56,13 +56,29 @@ module HasFields::Manage
       @field = HasFields::Field.find(params[:id])
       if @field.update_attributes(params[:field])
         respond_to do |format|
-          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}/" }
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage" }
           format.js { render "/has_fields/fields/manage/_index", :locals => {:edit => true} }
         end
       else
         respond_to do |format|
           format.html { render "/has_fields/fields/manage/_edit" }
           format.js { render "/has_fields/fields/manage/_edit", :locals => {:edit => true} }
+        end
+      end
+    end
+    
+    def destroy
+      @field = HasFields::Field.find(params[:id])
+      if @field.destroy
+        respond_to do |format|
+          flash[:success] = 'Field was successfully removed.'
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage" }
+          format.js { redirect_to "/has_fields/manage/fields/_index" }
+        end
+      else
+        respond_to do |format|
+          format.html { render "/has_fields/manage/fields/_edit", :layout => true }
+          format.js { render "/has_fields/manage/fields/_edit" }
         end
       end
     end

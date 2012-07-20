@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   match '/:scope/:scope_id/fields/manage/:id/edit' => 'has_fields/manage/fields#edit', :as => :edit_manage_fields, :via => :get
   match '/:scope/:scope_id/fields/manage/:id' => 'has_fields/manage/fields#update', :as => :update_fields, :via => :put
   match '/:scope/:scope_id/fields/manage/:id' => 'has_fields/manage/fields#show', :as => :manage_fields, :via => :get
+  match '/:scope/:scope_id/fields/manage/:id' => 'has_fields/manage/fields#destroy', :as => :destroy_manage_fields, :via => :delete
   match '/:resource/:id/fields/edit' => 'HasFields/fields#edit', :as => :edit_fields, :via => :get
   match '/:resource/:id/fields' => 'has_fields/fields#index', :as => :fields, :via => :get
   match '/:resource/:id/fields' => 'has_fields/fields#update', :as => :update_fields, :via => :put

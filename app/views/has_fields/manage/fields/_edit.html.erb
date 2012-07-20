@@ -1,5 +1,6 @@
-<div class="content-section info-section" id="infoSection">
+<div class="content-section field-section" id="fieldSection">
   <h4 class="content-section-head"><span>Edit Field</span></h4>
+  <%= common_error_messages(:advisor) %>
   <form class="form" action="/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage/#{@field.id}" %>" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <fieldset class="field-group field-info">
@@ -12,6 +13,7 @@
       </p>
     </fieldset>
     <p class="form-actions">
+      <a class="action delete-action" title="Permanantly delete this field." href="/destroy_confirmation?path=/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage/#{@field.id}" %>">delete</a>
       <input name="_method" type="hidden" value="put" />
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
@@ -19,3 +21,4 @@
     </p>
   </form>
 </div>
+
