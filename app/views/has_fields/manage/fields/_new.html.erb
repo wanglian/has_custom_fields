@@ -19,7 +19,7 @@
       <p class="field text-field">
         <label>
           <span class="field-label">Applies to</span>
-          <%= select_tag "field[kind]", options_for_select(HasFields.config.keys.sort) %>
+          <%= select_tag "field[kind]", options_for_select(HasFields.config.keys.sort, params[:kind]) %>
         </label>
       </p>
     </fieldset>

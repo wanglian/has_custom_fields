@@ -10,7 +10,7 @@
     <div class="field-group field-<%= resource %>" id="<%= resource.camelcase %>FieldsGroup">
       <h5 class="field-group-head"><span><%= resource %></span></h5>
       <form action="/<%= @scope.pluralize %>/<%= @scope_object.id %>/fields/manage" method="get" autocomplete="off" novalidate="novalidate">
-        <%= render :partial => "/shared/list/table", :formats => [:html], :locals => {:screens => nil, :records => "#{resource.underscore}_fields", :partial => "has_fields/manage/fields", :add => {:partial => nil, :link => "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/new"}} %>
+        <%= render :partial => "/shared/list/table", :formats => [:html], :locals => {:screens => nil, :records => "#{resource.underscore}_fields", :partial => "has_fields/manage/fields", :add => {:partial => nil, :link => "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/new?kind=#{resource}"}} %>
       </form>
     </div>
     <% end %>
