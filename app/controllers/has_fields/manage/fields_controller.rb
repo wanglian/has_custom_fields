@@ -19,7 +19,7 @@ module HasFields::Manage
         format.js { render "/has_fields/manage/fields/_show" }
       end
     end
-    
+
     def new
       @field = HasFields::Field.new
       respond_to do |format|
@@ -27,7 +27,7 @@ module HasFields::Manage
         format.js { render "/has_fields/manage/fields/_new" }
       end
     end
-    
+
     def create
       @field = HasFields::Field.new(params[:field])
       @field.send("#{@scope}_id=",@scope_object.id)
@@ -66,7 +66,7 @@ module HasFields::Manage
         end
       end
     end
-    
+
     def destroy
       @field = HasFields::Field.find(params[:id])
       if @field.destroy
@@ -94,7 +94,7 @@ module HasFields::Manage
       fields_by_resource = Field.scoped_by(@scope_object).group_by(&:kind)
       @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", fields_by_resource[r] || [])}
     end
-    
+
     def load_resource_and_scope
       @resources = HasFields.config.keys
       @scope = params[:scope].singularize

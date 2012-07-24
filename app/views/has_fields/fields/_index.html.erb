@@ -1,8 +1,11 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
   <div class="form">
+    <% if @fields.empty? %>
+    <p>No fields have been setup.</p>
+    <% else %>
     <% @fields.each do |k,v| %>
-      <div class="field-group entity-fields <%= k %>-fields">  
+      <div class="field-group entity-fields <%= k %>-fields">
         <h5 class="field-group-head"><span><%= k.to_s.titleize %> Fields</span></h5>
         <% if v.empty? %>
           <p>none</p>
@@ -25,6 +28,7 @@
           <% end %>
         <% end %>
       </div>
+    <% end %>
     <% end %>
   </div>
 </div>
