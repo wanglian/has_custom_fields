@@ -29,8 +29,7 @@ module HasFields::Manage
     end
     
     def create
-      @field = HasFields::Field.new(params[:field])
-      @field.send("#{@scope}_id=",@scope_object.id)
+      @field = HasFields::Field.new(params[:field].merge("#{@scope}_id".to_sym => @scope_object.id))
       if @field.save
         respond_to do |format|
           format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}" }
@@ -93,7 +92,7 @@ module HasFields::Manage
     end
     
     def load_field
-      @field = HasFields::Field.first(:conditions => ["fields.id = ? AND fields.user_id = ?",params[:id],current_user.id])
+      @field = HasFields::Field.find(params[:id])
       unless @field
         flash.now[:error] = "You do not have access to modify the field"
         redirect_to "/#{@scope}/#{@scope_object.id}/fields/manage" unless @field
