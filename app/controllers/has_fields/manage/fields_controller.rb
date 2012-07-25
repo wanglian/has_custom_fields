@@ -86,17 +86,12 @@ module HasFields::Manage
     protected
 
     def load_fields
-      # find all fields applicable to the current user that are scoped by the supplied scope
-      fields_by_resource = Field.scoped_by(@scope_object).group_by(&:kind)
-      @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", fields_by_resource[r] || [])}
+      # for each resource, find all fields applicable to the current user that are scoped by the supplied scope
+      @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", Field.scoped_by(@scope_object).where(:kind => r).paginate(:page => params[:page]))}
     end
     
     def load_field
       @field = HasFields::Field.find(params[:id])
-      unless @field
-        flash.now[:error] = "You do not have access to modify the field"
-        redirect_to "/#{@scope}/#{@scope_object.id}/fields/manage" unless @field
-      end
     end
     
     def load_resource_and_scope
@@ -105,12 +100,6 @@ module HasFields::Manage
       load_resource(@scope)
       # the scope object should be either the current user, a user from their org, or their org.
       @scope_object = @scope.classify.constantize.find(params[:scope_id])
-      # to stop users accessing fields form other orgs
-      if (@scope == "user" && @scope_object.organization_id != current_user.organization_id) ||
-         (@scope == "organization" && @scope_object.id != current_user.organization_id) ||
-         (@scope_object.respond_to?(:organnization_id) && @scope_object.organization_id != current_user.organization_id)
-        redirect_to "/"
-      end
     end
   end
 end
