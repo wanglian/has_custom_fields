@@ -19,7 +19,7 @@ module HasFields::Manage
         format.js { render "/has_fields/manage/fields/_show" }
       end
     end
-    
+
     def new
       @field = HasFields::Field.new
       respond_to do |format|
@@ -27,7 +27,7 @@ module HasFields::Manage
         format.js { render "/has_fields/manage/fields/_new" }
       end
     end
-    
+
     def create
       @field = HasFields::Field.new(params[:field].merge("#{@scope}_id".to_sym => @scope_object.id))
       if @field.save
@@ -63,7 +63,7 @@ module HasFields::Manage
         end
       end
     end
-    
+
     def destroy
       if @field.destroy
         respond_to do |format|

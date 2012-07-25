@@ -4,7 +4,7 @@ module HasFields
     before_filter :set_resource
     before_filter :load_fieldable, :except => [:manage]
     before_filter :load_fields, :only => [:index, :edit, :manage]
-    
+
     layout "application"
 
     def index
@@ -50,7 +50,7 @@ module HasFields
     def tab
       "fields"
     end
-    
+
     protected
     def load_fieldable
       load_resource(params[:resource])
@@ -59,15 +59,16 @@ module HasFields
 
     def load_fields
       @fields = {}
-      HasFields.config[@resource.classify][:scopes].each do |scope|
-        @fields[scope] = @resource.classify.constantize.fields(scope == :user ? current_user : current_user.send(scope))
+      if HasFields.config[@resource.classify]
+        HasFields.config[@resource.classify][:scopes].each do |scope|
+          @fields[scope] = @resource.classify.constantize.fields(scope == :user ? current_user : current_user.send(scope))
+        end
       end
     end
 
     def set_resource
       @resource = params[:resource]
     end
-    
   end
 end
 

@@ -3,6 +3,9 @@
   <%= common_error_messages(@fieldable.class.table_name.to_sym) %>
   <form class="form" action="/<%= @fieldable.class.table_name %>/<%= @fieldable.id %>/fields" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
+    <% if @fields.empty? %>
+    <p>No fields have been setup.</p>
+    <% else %>
     <% @fields.each do |k,v| %>
       <fieldset class="field-group entity-fields <%= k.to_s %>-fields">
         <legend class="field-group-head"><span><%= k.to_s.titleize %></span></legend>
@@ -14,6 +17,7 @@
           <% end %>
         <% end %>
       </fieldset>
+    <% end %>
     <% end %>
     <p class="form-actions">
       <input name="_method" type="hidden" value="put" />
