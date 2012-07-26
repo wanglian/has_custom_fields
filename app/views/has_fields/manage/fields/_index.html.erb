@@ -2,7 +2,7 @@
   <h4 class="content-section-head"><span>Fields</span></h4>
   <div class="form">
     <ul class="field-group-index">
-      <% @resources.each do |resource| %>
+      <% @resources.sort.each do |resource| %>
       <li class="index<%= " selected" if @resources.index(resource) == 0 %>"><a href="#<%= resource.camelcase %>FieldsGroup"><%= resource %></a></li>
       <% end %>
     </ul>

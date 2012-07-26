@@ -95,7 +95,7 @@ module HasFields::Manage
     end
     
     def load_resource_and_scope
-      @resources = HasFields.config.keys
+      @resources = HasFields.config.keys.sort
       @scope = params[:scope].singularize
       load_resource(@scope)
       # the scope object should be either the current user, a user from their org, or their org.
