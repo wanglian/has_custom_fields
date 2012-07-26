@@ -30,7 +30,8 @@ module HasFields::Manage
 
     def create
       @field = HasFields::Field.new(params[:field].merge("#{@scope}_id".to_sym => @scope_object.id))
-      if @field.save
+      @field.field_select_options.build unless !params[:add_select_option]
+      if (@field.style != 'select' || @field.field_select_options.any?) && params[:save] == 'save' && @field.save
         respond_to do |format|
           format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}" }
           format.js { render "/has_fields/manage/fields/_index", :locals => {:edit => true} }
@@ -51,14 +52,15 @@ module HasFields::Manage
     end
     
     def update
-      if @field.update_attributes(params[:field])
+      @field.field_select_options.build unless !params[:add_select_option]
+      if params[:save] && @field.update_attributes(params[:field])
         respond_to do |format|
-          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage" }
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}" }
           format.js { render "/has_fields/fields/manage/_index", :locals => {:edit => true} }
         end
       else
         respond_to do |format|
-          format.html { render "/has_fields/fields/manage/_edit" }
+          format.html { render "/has_fields/manage/fields/_edit" }
           format.js { render "/has_fields/fields/manage/_edit", :locals => {:edit => true} }
         end
       end
