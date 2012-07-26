@@ -7,7 +7,7 @@ module HasFields
       end
       
       HasFields.config||={}
-      HasFields.config[self.name] = default_config(self.name).merge(options)
+      HasFields.config[self.name] = default_config.merge(options)
 
       base_class = self.name
 
@@ -80,16 +80,12 @@ module HasFields
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
           validates_presence_of :name
           validates_uniqueness_of :name, :scope => HasFields.config[klass][:scopes].map { |f| f.to_s.foreign_key }, :message => "The field name is already taken."
-          validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(", ")}."
+          validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "should be one of: #{ALLOWABLE_TYPES.join(", ")}."
           validate :no_duplicate_select_options
           accepts_nested_attributes_for :field_select_options, :reject_if => proc {|o| o['option'].blank? }, :allow_destroy => true
           
           def self.reloadable? #:nodoc:
             false
-          end
-          
-          def related_select_options
-            self.send("field_select_options")
           end
           
           def self.scoped_by(scope_object)
@@ -111,7 +107,7 @@ module HasFields
           end
           
           def select_options_data
-            field_select_options.map{|o| o.option }
+            HasFields::FieldSelectOption.find_all_by_field_id(id).map{|o| o.option }
           end
           
           def no_duplicate_select_options
@@ -187,7 +183,7 @@ module HasFields
       ::HasFields.const_set("FieldSelectOption", Object.const_get("FieldSelectOption"))
     end
 
-    def default_config(class_name)
+    def default_config
       {
        :fields_class_name => "Field",
        :fields_table_name => "fields",

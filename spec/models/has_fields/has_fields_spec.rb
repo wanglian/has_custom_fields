@@ -22,7 +22,20 @@ describe "#has_fields" do
     }.to raise_error(HasFields::InvalidScopeError, 'Class Advisor does not have scope :hash defined for has_fields')
   end
   
-  it "should provide a default set of options"
+  it "should provide a default set of options" do
+    Advisor.send(:default_config).should == {
+     :fields_class_name => "Field",
+     :fields_table_name => "fields",
+     :fields_relationship_name => :fields,
+     :attributes_class_name => "FieldAttribute",
+     :attributes_table_name => "field_attributes",
+     :attributes_relationship_name => :field_attributes,
+     :select_options_class_name => "FieldSelectOption",
+     :select_options_table_name => :field_select_options,
+     :select_options_relationship_name => :field_select_options,
+     :foreign_key => "advisor_id"
+    }
+  end
   
 end
   
@@ -62,7 +75,11 @@ describe HasFields::Field do
       }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Kind Please specify the class that this field will be added to.')
     end
     
-    it "should be one of the allowed styles"
+    it "should be one of the allowed styles" do
+      expect {
+        Field.create!(:organization_id => organization.id, :name => 'Value', :style => 'something else', :kind => "User")
+      }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Style should be one of: select, checkbox, text, date.')
+    end
     
   end
   
@@ -86,11 +103,14 @@ describe HasFields::Field do
   
   context "with select options" do
     
-    let(:field) { Field.make!(:organization_id => organization.id, :name => 'Value', :style => 'select', :kind => "User") }
-    let(:option_a) { FieldSelectOption.create!(:option => "Option A", :field => field) }
-    let(:option_b) { FieldSelectOption.create!(:option => "Option b", :field => field) }
+    let(:field) { Field.create!(:organization_id => organization.id, :name => 'Value', :style => 'select', :kind => "User") }
+    let(:option_a) { FieldSelectOption.create!(:option => "Option A", :field_id => field.id) }
+    let(:option_b) { FieldSelectOption.create!(:option => "Option B", :field_id => field.id) }
     
-    it "should return an array of select options data"
+    it "should return an array of select options data" do
+      field.field_select_options = [option_a,option_b]
+      field.select_options_data.should == ["Option A","Option B"]
+    end
     
   end
   
@@ -151,6 +171,10 @@ describe HasFields::FieldSelectOption do
   let(:field_select_option_a) { HasFields::FieldSelectOption.create!(:field => field, :option => "Option A")}
   let(:field_select_option_b) { HasFields::FieldSelectOption.create!(:field => field, :option => "Option B")}
   
+  before do
+    field.field_select_options = [field_select_option_a,field_select_option_b]
+  end
+  
   it "should belong to a field" do
     field_select_option_a.field.should == field
   end
@@ -163,7 +187,11 @@ describe HasFields::FieldSelectOption do
       }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Option The select option cannot be blank.")
     end
     
-    it "should be invalid if the option is a duplicate"
+    it "should be invalid if the option is a duplicate" do
+      expect {
+        HasFields::FieldSelectOption.create!(:field_id => field.id, :option => "Option A")
+      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Option There should not be any duplicate select options.")
+    end
     
   end
   
