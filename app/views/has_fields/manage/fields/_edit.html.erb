@@ -1,6 +1,6 @@
 <div class="content-section field-section" id="fieldSection">
   <h4 class="content-section-head"><span>Edit Field</span></h4>
-  <%= common_error_messages(:advisor) %>
+  <%= common_error_messages(@resource.constantize.table_name.to_sym) if @resource %>
   <form class="form" action="/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage/#{@field.id}" %>" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <fieldset class="field-group field-info">

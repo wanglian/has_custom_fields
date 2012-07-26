@@ -14,6 +14,7 @@
             <p class="field">
               <dfn class="field-label"><%= field.name %></dfn> 
               <span class="value">
+<!-- TODO: yank current user -->
                 <% if field_attribute = @fieldable.fields[k][(k==:user ? current_user.id : current_user.send(k).id)][field.name] %>
                   <% if field_attribute.is_a?(Date) %>
                     <%= field_attribute.strftime("%d %B %Y") %>
