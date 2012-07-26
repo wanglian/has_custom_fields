@@ -13,16 +13,29 @@
       <p class="field text-field">
         <label>
           <span class="field-label">Style</span>
-          <%= select_tag "field[style]", options_for_select(["checkbox","date","select","text"]) %>
+          <%= select_tag "field[style]", options_for_select(["checkbox","date","select","text"], @field.style) %>
         </label>
       </p>
       <p class="field text-field">
         <label>
           <span class="field-label">Applies to</span>
-          <%= select_tag "field[kind]", options_for_select(HasFields.config.keys.sort, params[:kind]) %>
+          <%= select_tag "field[kind]", options_for_select(HasFields.config.keys.sort, @field.kind || params[:kind]) %>
         </label>
       </p>
     </fieldset>
+    <% if @field.style == 'select' %>
+      <fieldset class="field-group field-select-options">
+        <legend class="field-group-head"><span>Select Options</span></legend>
+        <p class="field text-field">
+          <label>
+            <% ([@field.field_select_options.size,3].max).times do |option| %>
+              <%= text_field_tag "field[field_select_options_attributes][][option]",@field.select_options_data[option] %>
+            <% end %>
+            <input  class="save-action" type="submit" name="add_select_option" value="add option" />
+          </label>
+        </p>
+      </fieldset>
+    <% end %>
     <p class="form-actions">
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />

@@ -13,29 +13,23 @@ module HasFields
 
       # Attempt to load Field related class. If not create it
       begin
-        Object.const_get("Field")
+        Object.const_get("HasFields::Field")
       rescue
         HasFields.create_associated_fields_class(base_class)
       end
 
       # Attempt to load FieldAttribute related class. If not create it
       begin
-        Object.const_get("FieldAttribute")
+        Object.const_get("HasFields::FieldAttribute")
       rescue
         HasFields.create_associated_values_class(base_class)
       end
       
       # Attempt to load the FieldSelectOption related class. If not create it
       begin
-        Object.const_get("FieldSelectOption")
+        Object.const_get("HasFields::FieldSelectOption")
       rescue
         HasFields.create_associated_select_options_class(base_class)
-      end
-
-      # Modify attribute class
-      FieldAttribute.class_eval do
-        belongs_to base_class.underscore, :foreign_key => HasFields.config[base_class][:foreign_key]
-        alias_method :base, base_class.underscore # For generic access
       end
 
       # Modify main class
@@ -79,13 +73,16 @@ module HasFields
       Object.const_set(HasFields.config[klass][:fields_class_name],
         Class.new(::HasFields::Base)).class_eval do
           self.table_name = HasFields.config[klass][:fields_table_name]
-          has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :foreign_key => :field_id, :dependent => :destroy
           has_many :field_select_options, :class_name => "::HasFields::FieldSelectOption", :foreign_key => :field_id, :dependent => :destroy
+          has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :foreign_key => :field_id, :dependent => :destroy
           belongs_to klass.underscore.to_sym
           scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
+          validates_presence_of :name
           validates_uniqueness_of :name, :scope => HasFields.config[klass][:scopes].map { |f| f.to_s.foreign_key }, :message => "The field name is already taken."
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "Invalid style.  Should be #{ALLOWABLE_TYPES.join(", ")}."
+          validate :no_duplicate_select_options
+          accepts_nested_attributes_for :field_select_options, :reject_if => proc {|o| o['option'].blank? }, :allow_destroy => true
           
           def self.reloadable? #:nodoc:
             false
@@ -115,6 +112,12 @@ module HasFields
           
           def select_options_data
             field_select_options.map{|o| o.option }
+          end
+          
+          def no_duplicate_select_options
+            if style == 'select' && (field_select_options.size != field_select_options.map{|o| o.option}.uniq.size)
+              errors[:base] << "There are duplicate select options."
+            end
           end
 
         end
@@ -175,11 +178,11 @@ module HasFields
       Object.const_set(HasFields.config[klass][:select_options_class_name],
         Class.new(ActiveRecord::Base)).class_eval do
           self.table_name = HasFields.config[klass][:select_options_table_name]
-          
           belongs_to :field, :class_name => "::HasFields::Field"
-
+          
           validates_presence_of :option, :message => "The select option cannot be blank."
           validates_exclusion_of :option, :in => Proc.new{|o| o.field ? o.field.field_select_options.map{|opt| opt.option } : []}, :message => "There should not be any duplicate select options."
+        
         end
       ::HasFields.const_set("FieldSelectOption", Object.const_get("FieldSelectOption"))
     end
@@ -193,8 +196,8 @@ module HasFields
        :attributes_table_name => "field_attributes",
        :attributes_relationship_name => :field_attributes,
        :select_options_class_name => "FieldSelectOption",
-       :select_options_table_name => "field_select_options",
-       :select_options_relationship_name => ":field_select_options",
+       :select_options_table_name => :field_select_options,
+       :select_options_relationship_name => :field_select_options,
        :foreign_key => self.name.foreign_key
       }
     end

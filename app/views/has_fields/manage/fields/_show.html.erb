@@ -14,10 +14,18 @@
   </p>
   <p>
     <strong>
-      style:
+      Style:
     </strong>
     <%= @field.style %>
   </p>
+  <% if @field.style == 'select' %>
+    <p>
+      <strong>
+        Select options:
+      </strong>
+      <%= @field.select_options_data.join(", ") %>
+    </p>
+  <% end %>
   <p>
     <strong>
       Associated with <%= @field.scoped_by_class %>:

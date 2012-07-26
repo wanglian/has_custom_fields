@@ -54,8 +54,8 @@ module HasFields
       values_class = HasFields.config[self.class.name][:values_class_name]
       value_field = HasFields.config[self.class.name][:value_field]
       fields_fkey = HasFields.config[self.class.name][:fields_table_name].singularize.foreign_key
-      fields = Field
-      values = FieldAttribute
+      fields = HasFields::Field
+      values = HasFields::FieldAttribute
       f = fields.send("find_by_name_and_#{scope}_id", attribute_name, scope_id)
       
       raise(ActiveRecord::RecordNotFound, "No field #{attribute_name} for #{scope} #{scope_id}") if f.nil?
