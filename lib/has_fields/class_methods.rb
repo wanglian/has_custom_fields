@@ -53,6 +53,12 @@ module HasFields
       instance_eval do
         has_many :field_attributes, :dependent => :destroy
       end
+      
+      # attach the field attributes to the class - needs to be done here so that the belongs_to doesn't get overwritten each time has_lists is called
+      FieldAttribute.class_eval do
+        belongs_to base_class.underscore.to_sym, :foreign_key => HasFields.config[base_class][:foreign_key]
+      end
+      
     end
 
     def fields(scope=nil)
@@ -127,9 +133,6 @@ module HasFields
         validates_presence_of :field_id
         validates_inclusion_of :value, :in => Proc.new{|v| v.field.field_select_options.map{|opt| opt.option }}, :if => Proc.new{|o| o.field && o.field.style == "select" }
         belongs_to :field, :class_name => "::HasFields::Field"
-        belongs_to klass.underscore.to_sym, :foreign_key => HasFields.config[klass][:foreign_key]
-        
-        alias_method :base, klass.underscore.to_sym
         
         def self.reloadable? #:nodoc:
           false
