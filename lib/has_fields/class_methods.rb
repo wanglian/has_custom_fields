@@ -27,7 +27,7 @@ module HasFields
       
       # Attempt to load the FieldSelectOption related class. If not create it
       begin
-        Object.const_get("HasFields:FieldSelectOption")
+        Object.const_get("FieldSelectOption")
       rescue
         HasFields.create_associated_select_options_class(base_class)
       end
