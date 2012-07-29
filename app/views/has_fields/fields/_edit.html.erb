@@ -12,6 +12,7 @@
         <% if v.empty? %>
           <p>No fields associated with the <%= k.to_s %></p>
         <% else %>
+<!-- TODO: yank current user -->
           <% v.each do |field| %>
             <%= render :partial => "/has_fields/fields/field", :formats => [:html], :locals => {:field => field, :entity => @fieldable, :scope => k, :scope_id => k==:user ? current_user.id : current_user.send(k).id} %>
           <% end %>
@@ -23,7 +24,7 @@
       <input name="_method" type="hidden" value="put" />
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
-      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= @fieldable.class.table_name.singularize %>/<%= @fieldable.id %>#infoSection">cancel</a>
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= @fieldable.class.table_name %>/<%= @fieldable.id %>/overview">cancel</a>
     </p>
   </form>
 </div>

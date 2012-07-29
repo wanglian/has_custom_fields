@@ -1,5 +1,6 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
+  <%= common_error_messages(@resource.constantize.table_name.to_sym) if @resource %>
   <div class="form">
     <ul class="field-group-index">
       <% @resources.sort.each do |resource| %>

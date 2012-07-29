@@ -33,7 +33,8 @@ module HasFields::Manage
       @field.field_select_options.build unless !params[:add_select_option]
       if (@field.style != 'select' || @field.field_select_options.any?) && params[:save] == 'save' && @field.save
         respond_to do |format|
-          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}" }
+          flash[:success] = 'Field was successfully created.'
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage?resource=#{@field.kind}"}
           format.js { render "/has_fields/manage/fields/_index", :locals => {:edit => true} }
         end
       else
@@ -50,12 +51,13 @@ module HasFields::Manage
         format.js { render "/has_fields/manage/fields/_edit" }
       end
     end
-    
+
     def update
       @field.field_select_options.build unless !params[:add_select_option]
       if params[:save] && @field.update_attributes(params[:field])
         respond_to do |format|
-          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/#{@field.id}" }
+          flash[:success] = 'Field was successfully updated.'
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage?resource=#{@field.kind}" }
           format.js { render "/has_fields/fields/manage/_index", :locals => {:edit => true} }
         end
       else
@@ -70,7 +72,7 @@ module HasFields::Manage
       if @field.destroy
         respond_to do |format|
           flash[:success] = 'Field was successfully removed.'
-          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage" }
+          format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage?resource=#{@field.kind}" }
           format.js { redirect_to "/has_fields/manage/fields/_index" }
         end
       else
@@ -97,6 +99,7 @@ module HasFields::Manage
     end
     
     def load_resource_and_scope
+      @resource = params[:resource]
       @resources = HasFields.config.keys.sort
       @scope = params[:scope].singularize
       load_resource(@scope)
