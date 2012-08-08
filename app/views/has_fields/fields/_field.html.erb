@@ -26,5 +26,5 @@
 </p>
 <% elsif field.style == "date" %>
   <span class="field-label"><%= field.name %></span>
-  <%= date_select "fieldable[fields][#{scope}][#{scope_id}][#{field.name}]", 'date', {:default => entity.fields[scope][scope_id][field.name], :include_blank => true} %>
+  <%= date_select "fieldable[fields][#{scope}][#{scope_id}][#{field.name}]", 'date_value', {:default => entity.fields[scope][scope_id][field.name], :include_blank => true} %>
 <% end %>

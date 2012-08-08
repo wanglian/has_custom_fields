@@ -13,21 +13,21 @@ module HasFields
 
       # Attempt to load Field related class. If not create it
       begin
-        Object.const_get("HasFields::Field")
+        Object.const_get("Field")
       rescue
         HasFields.create_associated_fields_class(base_class)
       end
 
       # Attempt to load FieldAttribute related class. If not create it
       begin
-        Object.const_get("HasFields::FieldAttribute")
+        Object.const_get("FieldAttribute")
       rescue
         HasFields.create_associated_values_class(base_class)
       end
       
       # Attempt to load the FieldSelectOption related class. If not create it
       begin
-        Object.const_get("HasFields::FieldSelectOption")
+        Object.const_get("FieldSelectOption")
       rescue
         HasFields.create_associated_select_options_class(base_class)
       end
@@ -53,6 +53,12 @@ module HasFields
       instance_eval do
         has_many :field_attributes, :dependent => :destroy
       end
+      
+      # attach the field attributes to the class - needs to be done here so that the belongs_to doesn't get overwritten each time has_lists is called
+      FieldAttribute.class_eval do
+        belongs_to base_class.underscore.to_sym, :foreign_key => HasFields.config[base_class][:foreign_key]
+      end
+      
     end
 
     def fields(scope=nil)
@@ -82,6 +88,7 @@ module HasFields
           validates_uniqueness_of :name, :scope => HasFields.config[klass][:scopes].map { |f| f.to_s.foreign_key }, :message => "The field name is already taken."
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "should be one of: #{ALLOWABLE_TYPES.join(", ")}."
           validate :no_duplicate_select_options
+          validate :select_options_present
           accepts_nested_attributes_for :field_select_options, :reject_if => proc {|o| o['option'].blank? }, :allow_destroy => true
           
           def self.reloadable? #:nodoc:
@@ -115,6 +122,12 @@ module HasFields
               errors[:base] << "There are duplicate select options."
             end
           end
+          
+          def select_options_present
+            if style == 'select' && (field_select_options.size == 0)
+              errors[:base] << "There must be at least one select option."
+            end
+          end
 
         end
       ::HasFields.const_set("Field", Object.const_get("Field"))
@@ -127,9 +140,6 @@ module HasFields
         validates_presence_of :field_id
         validates_inclusion_of :value, :in => Proc.new{|v| v.field.field_select_options.map{|opt| opt.option }}, :if => Proc.new{|o| o.field && o.field.style == "select" }
         belongs_to :field, :class_name => "::HasFields::Field"
-        belongs_to klass.underscore.to_sym, :foreign_key => HasFields.config[klass][:foreign_key]
-        
-        alias_method :base, klass.underscore.to_sym
         
         def self.reloadable? #:nodoc:
           false

@@ -1,11 +1,11 @@
 <div class="content-section field-section" id="fieldSection">
   <h4 class="content-section-head"><span>Edit Field</span></h4>
-  <%= common_error_messages(@resource.constantize.table_name.to_sym) if @resource %>
+  <%= common_error_messages(:field) %>
   <form class="form" action="/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage/#{@field.id}" %>" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <fieldset class="field-group field-info">
       <legend class="field-group-head"><span>Field Info</span></legend>
-      <p class="field text-field name">
+      <p class="field text-field name<%= " error" if @field.errors.include?(:name) %>">
         <label>
           <span class="field-label">Name</span>
           <input class="input" type="text" name="field[name]" value="<%= @field.name %>" />
@@ -15,16 +15,16 @@
     <% if @field.style == "select" %>
     <% @field.field_select_options.build %>
     <fieldset class="field-group field-select-options">
-      <legend class="field-group-head"><span>Select Options</span></legend>
+      <legend class="field-group-head"><span>Select Options</span><input class="action" type="submit" name="add" value="Add" /></legend>
+      <% @field.field_select_options.each_with_index do |field_select_option, i| %>
       <p class="field text-field">
         <label>
-          <% @field.field_select_options.length.times do |i| %>
-          <input class="input" type="hidden" name="field[field_select_options_attributes][<%= i %>][id]" value="<%= @field.field_select_options[i].try(:id) %>" />
-          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= @field.select_options_data[i] %>" />
-          <% end %>
-          <input  class="action" type="submit" name="add_select_option" value="Add" />
+          <span class="field-label">Option <%= i + 1 %></span>
+          <input class="input" type="hidden" name="field[field_select_options_attributes][<%= i %>][id]" value="<%= @field.field_select_options[i].id %>" />
+          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= field_select_option.option %>" />
         </label>
       </p>
+      <% end %>
     </fieldset>
     <% end %>
     <p class="form-actions">

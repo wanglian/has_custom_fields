@@ -30,7 +30,7 @@ module HasFields::Manage
 
     def create
       @field = HasFields::Field.new(params[:field].merge("#{@scope}_id".to_sym => @scope_object.id))
-      if (@field.style != "select" || @field.field_select_options.any?) && params[:save] == "save" && @field.save
+      if params[:save] == "save" && @field.save
         respond_to do |format|
           flash[:success] = 'Field was successfully created.'
           format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage?resource=#{@field.kind}"}

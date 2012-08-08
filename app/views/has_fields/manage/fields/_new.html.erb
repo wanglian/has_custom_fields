@@ -1,11 +1,11 @@
 <div class="content-section info-section" id="infoSection">
   <h4 class="content-section-head"><span>New Field</span></h4>
-  <%= common_error_messages(@resource.constantize.table_name.to_sym) if @resource %>
+  <%= common_error_messages(:field) %>
   <form class="form" action="<%= "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage"%>" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <fieldset class="field-group field-info">
       <legend class="field-group-head"><span>Field Info</span></legend>
-      <p class="field text-field name">
+      <p class="field text-field name<%= " error" if @field.errors.include?(:name) %>">
         <label>
           <span class="field-label">Name</span>
           <input class="input" type="text" name="field[name]" value="<%= @field.name %>" />
@@ -27,13 +27,14 @@
     <% @field.field_select_options.build %>
     <fieldset class="field-group field-select-options">
       <legend class="field-group-head"><span>Select Options</span><input class="action" type="submit" name="add" value="Add" /></legend>
-      <p class="field text-field">
+      <% @field.field_select_options.each_with_index do |field_select_option, i| %>
+      <p class="field text-field<%= " error" if field_select_option.errors.include?(:option) %>">
         <label>
-          <% @field.field_select_options.length.times do |i| %>
-          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= @field.select_options_data[i] %>" />
-          <% end %>
+          <span class="field-label">Option <%= i + 1 %></span>
+          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= field_select_option.option %>" />
         </label>
       </p>
+      <% end %>
     </fieldset>
     <p class="form-actions">
       <input  class="action save-action" type="submit" name="save" value="save" />
