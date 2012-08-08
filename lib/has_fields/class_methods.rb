@@ -88,6 +88,7 @@ module HasFields
           validates_uniqueness_of :name, :scope => HasFields.config[klass][:scopes].map { |f| f.to_s.foreign_key }, :message => "The field name is already taken."
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "should be one of: #{ALLOWABLE_TYPES.join(", ")}."
           validate :no_duplicate_select_options
+          validate :select_options_present
           accepts_nested_attributes_for :field_select_options, :reject_if => proc {|o| o['option'].blank? }, :allow_destroy => true
           
           def self.reloadable? #:nodoc:
@@ -119,6 +120,12 @@ module HasFields
           def no_duplicate_select_options
             if style == 'select' && (field_select_options.size != field_select_options.map{|o| o.option}.uniq.size)
               errors[:base] << "There are duplicate select options."
+            end
+          end
+          
+          def select_options_present
+            if style == 'select' && (field_select_options.size == 0)
+              errors[:base] << "There must be at least one select option."
             end
           end
 
