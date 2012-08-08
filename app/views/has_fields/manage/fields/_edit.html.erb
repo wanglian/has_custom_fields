@@ -12,19 +12,20 @@
         </label>
       </p>
     </fieldset>
-    <% if @field.style == 'select' %>
-      <fieldset class="field-group field-select-options">
-        <legend class="field-group-head"><span>Select Options</span></legend>
-        <p class="field text-field">
-          <label>
-            <% ([@field.field_select_options.size,3].max).times do |option| %>
-              <%= hidden_field_tag "field[field_select_options_attributes][#{option}][id]", @field.field_select_options[option].try(:id) %>
-              <%= text_field_tag "field[field_select_options_attributes][#{option}][option]",@field.select_options_data[option] %>
-            <% end %>
-            <input  class="save-action" type="submit" name="add_select_option" value="add option" />
-          </label>
-        </p>
-      </fieldset>
+    <% if @field.style == "select" %>
+    <% @field.field_select_options.build %>
+    <fieldset class="field-group field-select-options">
+      <legend class="field-group-head"><span>Select Options</span></legend>
+      <p class="field text-field">
+        <label>
+          <% @field.field_select_options.length.times do |i| %>
+          <input class="input" type="hidden" name="field[field_select_options_attributes][<%= i %>][id]" value="<%= @field.field_select_options[i].try(:id) %>" />
+          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= @field.select_options_data[i] %>" />
+          <% end %>
+          <input  class="action" type="submit" name="add_select_option" value="Add" />
+        </label>
+      </p>
+    </fieldset>
     <% end %>
     <p class="form-actions">
       <a class="action delete-action" title="Permanantly delete this field." href="/destroy_confirmation?path=/<%= "#{@field.scoped_by_class}/#{@scope_object.id}/fields/manage/#{@field.id}" %>">delete</a>

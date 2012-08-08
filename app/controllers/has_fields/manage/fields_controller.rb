@@ -30,8 +30,7 @@ module HasFields::Manage
 
     def create
       @field = HasFields::Field.new(params[:field].merge("#{@scope}_id".to_sym => @scope_object.id))
-      @field.field_select_options.build unless !params[:add_select_option]
-      if (@field.style != 'select' || @field.field_select_options.any?) && params[:save] == 'save' && @field.save
+      if (@field.style != "select" || @field.field_select_options.any?) && params[:save] == "save" && @field.save
         respond_to do |format|
           flash[:success] = 'Field was successfully created.'
           format.html { redirect_to "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage?resource=#{@field.kind}"}
@@ -53,7 +52,6 @@ module HasFields::Manage
     end
 
     def update
-      @field.field_select_options.build unless !params[:add_select_option]
       if params[:save] && @field.update_attributes(params[:field])
         respond_to do |format|
           flash[:success] = 'Field was successfully updated.'
@@ -93,11 +91,11 @@ module HasFields::Manage
       # for each resource, find all fields applicable to the current user that are scoped by the supplied scope
       @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", Field.scoped_by(@scope_object).where(:kind => r).paginate(:page => params[:page]))}
     end
-    
+
     def load_field
       @field = HasFields::Field.find(params[:id])
     end
-    
+
     def load_resource_and_scope
       @resource = params[:resource]
       @resources = HasFields.config.keys.sort
