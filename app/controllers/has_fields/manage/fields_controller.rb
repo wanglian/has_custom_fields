@@ -86,7 +86,6 @@ module HasFields::Manage
     end
 
     protected
-
     def load_fields
       # for each resource, find all fields applicable to the current user that are scoped by the supplied scope
       @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", Field.scoped_by(@scope_object).where(:kind => r).paginate(:page => params[:page]))}

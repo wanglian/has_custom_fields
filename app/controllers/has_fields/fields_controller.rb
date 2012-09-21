@@ -4,7 +4,6 @@ module HasFields
     before_filter :set_resource
     before_filter :load_fieldable, :except => [:manage]
     before_filter :load_fields, :only => [:index, :edit, :manage]
-
     layout "application"
 
     def index
@@ -53,8 +52,7 @@ module HasFields
 
     protected
     def load_fieldable
-      load_resource(params[:resource])
-      @fieldable = instance_variable_get("@#{params[:resource].singularize}")
+      @fieldable = instance_variable_get("@#{@resource.singularize}")
     end
 
     def load_fields
