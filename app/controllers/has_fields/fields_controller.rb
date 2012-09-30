@@ -1,8 +1,7 @@
 module HasFields
   class FieldsController < ApplicationController
-    before_filter :authenticate_user!
-    before_filter :set_resource
-    before_filter :load_fieldable, :except => [:manage]
+    before_filter :authenticate_user!, :set_params
+    before_filter :load_has_fields
     before_filter :load_fields, :only => [:index, :edit, :manage]
     layout "application"
 
@@ -35,13 +34,6 @@ module HasFields
       end
     end
 
-    def manage
-      respond_to do |format|
-        format.html { render "/has_fields/fields/_manage", :layout => true }
-        format.js { render "/has_fields/fields/_manage" }
-      end
-    end
-
     def recently_vieweds
       true
     end
@@ -51,8 +43,9 @@ module HasFields
     end
 
     protected
-    def load_fieldable
-      @fieldable = instance_variable_get("@#{@resource.singularize}")
+    # this is your hook to load whatever info you need to render the page
+    def load_has_fields
+      # need to set the base object
     end
 
     def load_fields
@@ -64,7 +57,7 @@ module HasFields
       end
     end
 
-    def set_resource
+    def set_params
       @resource = params[:resource]
     end
   end

@@ -1,7 +1,7 @@
 module HasFields::Manage
   class FieldsController < HasFields::ApplicationController
-    before_filter :authenticate_user!
-    before_filter :load_resource_and_scope
+    before_filter :authenticate_user!, :set_params
+    before_filter :load_has_fields
     before_filter :load_fields, :only => [:index, :edit]
     before_filter :load_field, :only => [:show, :edit, :update, :destroy]
     layout "application"
@@ -86,8 +86,12 @@ module HasFields::Manage
     end
 
     protected
+    # this is your hook to load whatever info you need to render the page
+    def load_has_fields
+      # need to set the base object
+    end
+
     def load_fields
-      # for each resource, find all fields applicable to the current user that are scoped by the supplied scope
       @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", Field.scoped_by(@scope_object).where(:kind => r).paginate(:page => params[:page]))}
     end
 
@@ -95,13 +99,10 @@ module HasFields::Manage
       @field = HasFields::Field.find(params[:id])
     end
 
-    def load_resource_and_scope
+    def set_params
       @resource = params[:resource]
       @resources = HasFields.config.keys.sort
       @scope = params[:scope].singularize
-      load_resource(@scope)
-      # the scope object should be either the current user, a user from their org, or their org.
-      @scope_object = @scope.classify.constantize.find(params[:scope_id])
     end
   end
 end
