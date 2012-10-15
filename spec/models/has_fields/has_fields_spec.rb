@@ -78,7 +78,7 @@ describe HasFields::Field do
     it "should be one of the allowed styles" do
       expect {
         Field.create!(:organization_id => organization.id, :name => 'Value', :style => 'something else', :kind => "User")
-      }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Style should be one of: select, checkbox, text, date.')
+      }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Style should be one of: select, checkbox, text, date, decimal.')
     end
     
   end
@@ -103,7 +103,7 @@ describe HasFields::Field do
   
   context "with select options" do
     
-    let(:field) { Field.create!(:organization_id => organization.id, :name => 'Value', :style => 'select', :kind => "User") }
+    let(:field) { Field.new(:organization_id => organization.id, :name => 'Value', :style => 'select', :kind => "User") }
     let(:option_a) { FieldSelectOption.create!(:option => "Option A", :field_id => field.id) }
     let(:option_b) { FieldSelectOption.create!(:option => "Option B", :field_id => field.id) }
     
@@ -152,8 +152,7 @@ describe HasFields::FieldAttribute do
     end
     
     it "should be invalid if the field style is select and the value is not the the select options (and not nil)" do
-      field.update_attributes(:style => "select")
-      HasFields::FieldSelectOption.create!(:option => "Option A", :field_id => field.id)
+      field.update_attributes(:style => "select", :field_select_options => [HasFields::FieldSelectOption.new(:option => "Option A")])
       expect {
         HasFields::FieldAttribute.create!(:field_id => field.id, :user_id => user.id, :value => 'Option B')
       }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Value is not included in the list")
@@ -167,12 +166,13 @@ describe HasFields::FieldSelectOption do
   
   let(:organization) { Organization.make! }
   let(:user) { User.make!(:organization => organization) }
-  let(:field) { HasFields::Field.create!(:name => "Value", :style => "select", :kind => "User", :organization_id => organization.id) }
-  let(:field_select_option_a) { HasFields::FieldSelectOption.create!(:field => field, :option => "Option A")}
-  let(:field_select_option_b) { HasFields::FieldSelectOption.create!(:field => field, :option => "Option B")}
+  let(:field) { HasFields::Field.new(:name => "Value", :style => "select", :kind => "User", :organization_id => organization.id) }
+  let(:field_select_option_a) { HasFields::FieldSelectOption.new(:option => "Option A")}
+  let(:field_select_option_b) { HasFields::FieldSelectOption.new(:option => "Option B")}
   
   before do
     field.field_select_options = [field_select_option_a,field_select_option_b]
+    field.save!
   end
   
   it "should belong to a field" do

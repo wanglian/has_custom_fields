@@ -38,7 +38,7 @@ module HasFields
     def save_modified_field_attributes
       return if @save_attrs.nil?
       @save_attrs.each do |s|
-        if [s.string_value, s.date_value, s.boolean_value ].compact.empty? || (s.respond_to?(:empty) && s.value.empty?)
+        if [s.string_value, s.date_value, s.boolean_value, s.decimal_value ].compact.empty? || (s.respond_to?(:empty) && s.value.empty?)
           s.destroy if !s.new_record?
         else
           s.save
@@ -99,6 +99,8 @@ module HasFields
         value_object.send("date_value=", new_date) if value_object
       when "checkbox"
         value_object.send("boolean_value=", value) if value_object
+      when "decimal"
+        value_object.send("decimal_value=", value) if value_object
       else
         value_object.send("string_value=", value) if value_object        
       end

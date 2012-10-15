@@ -146,7 +146,7 @@ module HasFields
         end
         
         def value
-          string_value || boolean_value || date_value
+          string_value || boolean_value || date_value || decimal_value
         end
         
         def value=(v)
@@ -160,22 +160,13 @@ module HasFields
             "date"
           when "checkbox"
             "boolean"
+          when "decimal"
+            "float"
           else
             "string"
           end
         end
 
-        def validate
-          field = self.field
-          raise "Couldn't load field" if !field
-          if field.style == "select" && !self.value.blank?
-            if field.field_select_options.find{|f| f == self.value}.nil?
-              raise "Invalid option: #{self.value}.  Should be one of #{field.field_select_options.join(", ")}"
-              self.errors.add_to_base("Invalid option: #{self.value}.  Should be one of #{field.field_select_options.join(", ")}")
-              return false
-            end
-          end
-        end
       end
       ::HasFields.const_set("FieldAttribute", Object.const_get("FieldAttribute"))
     end

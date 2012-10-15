@@ -15,7 +15,7 @@ module HasFields
 
   class InvalidScopeError < ActiveRecord::RecordNotFound; end
 
-  ALLOWABLE_TYPES = ['select', 'checkbox', 'text', 'date']
+  ALLOWABLE_TYPES = ['select', 'checkbox', 'text', 'date', 'decimal']
   mattr_accessor :config
 
   Object.const_set('TagFacade', Class.new(Object)).class_eval do
