@@ -2,7 +2,7 @@
   <h4 class="content-section-head"><span>Fields</span></h4>
   <div class="form">
     <% if @fields.empty? %>
-    <p>No fields have been setup.</p>
+    <p>No fields have been set up.</p>
     <% else %>
     <% @fields.each do |k,v| %>
       <div class="field-group entity-fields <%= k %>-fields">
@@ -15,7 +15,7 @@
               <dfn class="field-label"><%= field.name %></dfn> 
               <span class="value">
 <!-- TODO: yank current user -->
-                <% if field_attribute = @fieldable.fields[k][(k==:user ? current_user.id : current_user.send(k).id)][field.name] %>
+                <% if field_attribute = @scope_object.fields[k][(k==:user ? current_user.id : current_user.send(k).id)][field.name] %>
                   <% if field_attribute.is_a?(Date) %>
                     <%= field_attribute.strftime("%d %B %Y") %>
                   <% elsif field_attribute.is_a?(TrueClass) %>

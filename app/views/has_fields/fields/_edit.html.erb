@@ -1,7 +1,7 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
-  <%= common_error_messages(@fieldable.class.table_name.to_sym) %>
-  <form class="form" action="/<%= @fieldable.class.table_name %>/<%= @fieldable.id %>/fields" method="post" autocomplete="off" novalidate="novalidate">
+  <%= common_error_messages(@scope_object.class.table_name.to_sym) %>
+  <form class="form" action="/<%= @scope_object.class.table_name %>/<%= @scope_object.id %>/fields" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <% if @fields.empty? %>
     <p>No fields have been setup.</p>
@@ -14,7 +14,7 @@
         <% else %>
 <!-- TODO: yank current user -->
           <% v.each do |field| %>
-            <%= render :partial => "/has_fields/fields/field", :formats => [:html], :locals => {:field => field, :entity => @fieldable, :scope => k, :scope_id => k==:user ? current_user.id : current_user.send(k).id} %>
+            <%= render :partial => "/has_fields/fields/field", :formats => [:html], :locals => {:field => field, :entity => @scope_object, :scope => k, :scope_id => k==:user ? current_user.id : current_user.send(k).id} %>
           <% end %>
         <% end %>
       </fieldset>
@@ -24,7 +24,7 @@
       <input name="_method" type="hidden" value="put" />
       <input  class="action save-action" type="submit" name="save" value="save" />
       <input name="authenticity_token" type="hidden" value="<%= form_authenticity_token %>" />
-      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= @fieldable.class.table_name %>/<%= @fieldable.id %>/overview">cancel</a>
+      <a class="cancel-link" title="Close form and discard any unsaved changes" href="/<%= @scope_object.class.table_name %>/<%= @scope_object.id %>/overview">cancel</a>
     </p>
   </form>
 </div>
