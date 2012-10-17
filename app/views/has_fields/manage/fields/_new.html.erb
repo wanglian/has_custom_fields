@@ -31,7 +31,7 @@
       <p class="field text-field<%= " error" if field_select_option.errors.include?(:option) %>">
         <label>
           <span class="field-label">Option <%= i + 1 %></span>
-          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= field_select_option.option %>" />
+          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][name]" value="<%= field_select_option.name %>" />
         </label>
       </p>
       <% end %>

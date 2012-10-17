@@ -21,7 +21,7 @@
         <label>
           <span class="field-label">Option <%= i + 1 %></span>
           <input class="input" type="hidden" name="field[field_select_options_attributes][<%= i %>][id]" value="<%= @field.field_select_options[i].id %>" />
-          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][option]" value="<%= field_select_option.option %>" />
+          <input class="input" type="text" name="field[field_select_options_attributes][<%= i %>][name]" value="<%= field_select_option.name %>" />
         </label>
       </p>
       <% end %>
