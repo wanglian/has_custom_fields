@@ -89,7 +89,7 @@ module HasFields
           validates_inclusion_of :style, :in => ALLOWABLE_TYPES, :message => "should be one of: #{ALLOWABLE_TYPES.join(", ")}."
           validate :no_duplicate_select_options
           validate :select_options_present
-          accepts_nested_attributes_for :field_select_options, :reject_if => proc {|o| o['option'].blank? }, :allow_destroy => true
+          accepts_nested_attributes_for :field_select_options, :reject_if => proc {|o| o['name'].blank? }, :allow_destroy => true
           
           def self.reloadable? #:nodoc:
             false
@@ -114,12 +114,12 @@ module HasFields
           end
           
           def select_options_data
-            HasFields::FieldSelectOption.find_all_by_field_id(id).map{|o| o.option }
+            HasFields::FieldSelectOption.find_all_by_field_id(id).map{|o| o.name }
           end
           
           def no_duplicate_select_options
-            if style == 'select' && (field_select_options.size != field_select_options.map{|o| o.option}.uniq.size)
-              errors[:base] << "There are duplicate select options."
+            if style == 'select' && (field_select_options.size != field_select_options.map{|o| o.name}.uniq.size)
+              errors[:base] << "There are duplicate select option names."
             end
           end
           
@@ -138,7 +138,7 @@ module HasFields
       Class.new(ActiveRecord::Base)).class_eval do
         self.table_name = HasFields.config[klass][:attributes_table_name]
         validates_presence_of :field_id
-        validates_inclusion_of :value, :in => Proc.new{|v| v.field.field_select_options.map{|opt| opt.option }}, :if => Proc.new{|o| o.field && o.field.style == "select" }
+        validates_inclusion_of :value, :in => Proc.new{|v| v.field.field_select_options.map{|opt| opt.name }}, :if => Proc.new{|o| o.field && o.field.style == "select" }
         belongs_to :field, :class_name => "::HasFields::Field"
         
         def self.reloadable? #:nodoc:
@@ -177,8 +177,8 @@ module HasFields
           self.table_name = HasFields.config[klass][:select_options_table_name]
           belongs_to :field, :class_name => "::HasFields::Field"
           
-          validates_presence_of :option, :message => "The select option cannot be blank."
-          validates_exclusion_of :option, :in => Proc.new{|o| o.field ? o.field.field_select_options.map{|opt| opt.option } : []}, :message => "There should not be any duplicate select options."
+          validates_presence_of :name, :message => "The select option name cannot be blank."
+          validates_exclusion_of :name, :in => Proc.new{|o| o.field ? o.field.field_select_options.map{|opt| opt.name } : []}, :message => "There should not be any duplicate select option names."
         
         end
       ::HasFields.const_set("FieldSelectOption", Object.const_get("FieldSelectOption"))

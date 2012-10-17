@@ -26,7 +26,7 @@ class CreateFieldsForUser < ActiveRecord::Migration
     add_index :field_attributes, :date_value
     add_index :field_attributes, :decimal_value
     create_table(:field_select_options) do |t|
-      t.string :option, :null => false, :limit => 63
+      t.string :name, :null => false, :limit => 63
       t.integer :field_id
       t.timestamps
     end

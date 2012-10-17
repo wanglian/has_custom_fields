@@ -104,8 +104,8 @@ describe HasFields::Field do
   context "with select options" do
     
     let(:field) { Field.new(:organization_id => organization.id, :name => 'Value', :style => 'select', :kind => "User") }
-    let(:option_a) { FieldSelectOption.create!(:option => "Option A", :field_id => field.id) }
-    let(:option_b) { FieldSelectOption.create!(:option => "Option B", :field_id => field.id) }
+    let(:option_a) { FieldSelectOption.create!(:name => "Option A", :field_id => field.id) }
+    let(:option_b) { FieldSelectOption.create!(:name => "Option B", :field_id => field.id) }
     
     it "should return an array of select options data" do
       field.field_select_options = [option_a,option_b]
@@ -152,7 +152,7 @@ describe HasFields::FieldAttribute do
     end
     
     it "should be invalid if the field style is select and the value is not the the select options (and not nil)" do
-      field.update_attributes(:style => "select", :field_select_options => [HasFields::FieldSelectOption.new(:option => "Option A")])
+      field.update_attributes(:style => "select", :field_select_options => [HasFields::FieldSelectOption.new(:name => "Option A")])
       expect {
         HasFields::FieldAttribute.create!(:field_id => field.id, :user_id => user.id, :value => 'Option B')
       }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Value is not included in the list")
@@ -167,8 +167,8 @@ describe HasFields::FieldSelectOption do
   let(:organization) { Organization.make! }
   let(:user) { User.make!(:organization => organization) }
   let(:field) { HasFields::Field.new(:name => "Value", :style => "select", :kind => "User", :organization_id => organization.id) }
-  let(:field_select_option_a) { HasFields::FieldSelectOption.new(:option => "Option A")}
-  let(:field_select_option_b) { HasFields::FieldSelectOption.new(:option => "Option B")}
+  let(:field_select_option_a) { HasFields::FieldSelectOption.new(:name => "Option A")}
+  let(:field_select_option_b) { HasFields::FieldSelectOption.new(:name => "Option B")}
   
   before do
     field.field_select_options = [field_select_option_a,field_select_option_b]
@@ -184,13 +184,13 @@ describe HasFields::FieldSelectOption do
     it "should be invalid if the option is blank" do
       expect {
         HasFields::FieldSelectOption.create!(:field_id => field.id)
-      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Option The select option cannot be blank.")
+      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Name The select option name cannot be blank.")
     end
     
     it "should be invalid if the option is a duplicate" do
       expect {
-        HasFields::FieldSelectOption.create!(:field_id => field.id, :option => "Option A")
-      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Option There should not be any duplicate select options.")
+        HasFields::FieldSelectOption.create!(:field_id => field.id, :name => "Option A")
+      }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Name There should not be any duplicate select option names.")
     end
     
   end
@@ -266,9 +266,9 @@ describe 'Has Fields' do
       Field.create!(:organization_id => @org.id, :name => 'Customer', :style => 'checkbox', :kind => "User")
       user_field = Field.new(:organization_id => @org.id, :name => 'Category', :style => 'select', :kind => "User")
       user_field.save(:validate => false)
-      opt_a = FieldSelectOption.create!(:option => "CatA", :field_id => user_field.id)
-      opt_b = FieldSelectOption.create!(:option => "CatB", :field => user_field)
-      opt_c = FieldSelectOption.create!(:option => "CatC", :field => user_field)      
+      opt_a = FieldSelectOption.create!(:name => "CatA", :field => user_field)
+      opt_b = FieldSelectOption.create!(:name => "CatB", :field => user_field)
+      opt_c = FieldSelectOption.create!(:name => "CatC", :field => user_field)      
     end
 
     describe "class methods" do
@@ -282,7 +282,7 @@ describe 'Has Fields' do
       end
       
       it "returns an array of select options" do
-        select_options = User.fields(@org).last.field_select_options.map(&:option)
+        select_options = User.fields(@org).last.field_select_options.map(&:name)
         select_options.should == ["CatA","CatB","CatC"]
       end
       
@@ -355,12 +355,12 @@ describe 'Has Fields' do
         @org = Organization.create!(:name => 'ABC Corp')
         user_field = Field.new(:organization_id => @org.id, :name => "Category", :style => "select")
         user_field.save(:validate => false)
-        FieldSelectOption.create!(:option => "CatA", :field => user_field)
-        FieldSelectOption.create!(:option => "CatB", :field => user_field)
+        FieldSelectOption.create!(:name => "CatA", :field => user_field)
+        FieldSelectOption.create!(:name => "CatB", :field => user_field)
 
         expect {
-          FieldSelectOption.create!(:option => "CatA", :field_id => 1)
-        }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Option There should not be any duplicate select options.')
+          FieldSelectOption.create!(:name => "CatA", :field_id => 1)
+        }.to raise_error(ActiveRecord::RecordInvalid, 'Validation failed: Name There should not be any duplicate select option names.')
       end
       
     end
