@@ -29,18 +29,18 @@ class <%= migration_class_name %> < ActiveRecord::Migration
     add_index :<%= attributes_table_name %>, <%= [model_foreign_key, field_table_name.singularize.foreign_key].inspect %>, :unique => true
     add_index :<%= attributes_table_name %>, :<%= model_foreign_key %>
     add_index :<%= attributes_table_name %>, :<%= field_table_name.singularize.foreign_key %>
-    add_index :<%= attributes_table_name %>, :value
+    add_index :<%= attributes_table_name %>, :string_value
   end
 
   def self.down
+	  remove_index :<%= field_table_name %>, :name => <%= ([scope_foreign_key] + ['name']).inspect %>
+	  remove_index :<%= select_options_table_name %>, :name => :<%= field_relationship_name %>_id
+	  remove_index :<%= attributes_table_name %>, :name => <%= [model_foreign_key, field_table_name.singularize.foreign_key].inspect %>
+	  remove_index :<%= attributes_table_name %>, :name => :<%= model_foreign_key %>
+	  remove_index :<%= attributes_table_name %>, :name => :<%= field_table_name.singularize.foreign_key %>
+	  remove_index :<%= attributes_table_name %>, :name => :string_value
     drop_table(:<%= field_table_name %>)
     drop_table(:<%= attributes_table_name %>)
     drop_table(:<%= select_options_table_name %>)
-    remove_index :<%= field_table_name %>, :name => <%= ([scope_foreign_key] + ['name']).inspect %>
-    remove_index :<%= select_options_table_name %>, :name => :<%= field_relationship_name %>_id
-    remove_index :<%= attributes_table_name %>, :name => <%= [model_foreign_key, field_table_name.singularize.foreign_key].inspect %>
-    remove_index :<%= attributes_table_name %>, :name => :<%= model_foreign_key %>
-    remove_index :<%= attributes_table_name %>, :name => :<%= field_table_name.singularize.foreign_key %>
-    remove_index :<%= attributes_table_name %>, :name => :value
   end
 end

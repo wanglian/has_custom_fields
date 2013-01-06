@@ -26,7 +26,7 @@ module HasFields
 
     def generate_migration
       migration_template "has_fields_migration.rb.erb", "db/migrate/#{migration_file_name}"
-      migration_template "has_fields_db_constraints.rb.erb", "db/migrate/#{add_db_constraints_migration_file_name}"
+      # migration_template "has_fields_db_constraints.rb.erb", "db/migrate/#{add_db_constraints_migration_file_name}"
     end
 
     protected
