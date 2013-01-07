@@ -1,6 +1,6 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
-  <%= common_error_messages(@scope_object.class.table_name.to_sym) %>
+  <%#= common_error_messages(@scope_object.class.table_name.to_sym) %>
   <form class="form" action="/<%= @scope_object.class.table_name %>/<%= @scope_object.id %>/fields" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <% if @fields.empty? %>

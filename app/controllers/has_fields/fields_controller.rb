@@ -1,9 +1,8 @@
 module HasFields
-  class FieldsController < ApplicationController
+  class FieldsController < HasFields::ApplicationController
     before_filter :authenticate_user!
     before_filter :load_has_fields
     before_filter :load_fields, :only => [:index, :edit]
-    layout "application"
 
     def index
       respond_to do |format|

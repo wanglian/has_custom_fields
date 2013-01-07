@@ -88,8 +88,8 @@ module HasFields::Manage
       @resource = params[:resource]
       @resources = HasFields.config.keys.sort
       @scope = params[:scope].singularize
-      @scope_object = scope.singularize.classify.constantize.find(params[:scope_id])
-      @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", Field.scoped_by(@scope_object).where(:kind => r).paginate(:page => params[:page]))}
+      @scope_object = params[:scope].singularize.classify.constantize.find(params[:scope_id])
+      @resources.each{|r| instance_variable_set("@#{r.underscore}_fields", HasFields::Field.scoped_by(@scope_object).where(:kind => r).paginate(:page => params[:page]))}
     end
 
   end

@@ -73,7 +73,7 @@ Following on from the installation section above, we have a User with the follow
 We can now find the fields for the organization.
 
     @organization = @user.organization
-    @organization_fields = User.field_fields(:organization, @organization.id)
+    @organization_fields = User.fields(@organization)
 
 This returns an array full of UserFields that will look something like:
 

@@ -6,7 +6,7 @@ module HasFields
         raise ArgumentError, "Must define :scope => [] on the has_fields class method"
       end
       
-      HasFields.config||={}
+      HasFields.config ||= {}
       HasFields.config[self.name] = default_config.merge(options)
 
       base_class = self.name
@@ -79,8 +79,8 @@ module HasFields
       Object.const_set(HasFields.config[klass][:fields_class_name],
         Class.new(::HasFields::Base)).class_eval do
           self.table_name = HasFields.config[klass][:fields_table_name]
-          has_many :field_select_options, :class_name => "::HasFields::FieldSelectOption", :foreign_key => :field_id, :dependent => :destroy
-          has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :foreign_key => :field_id, :dependent => :destroy
+          has_many :field_select_options, :class_name => "::HasFields::FieldSelectOption", :dependent => :destroy
+          has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :dependent => :destroy
           belongs_to klass.underscore.to_sym
           scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'

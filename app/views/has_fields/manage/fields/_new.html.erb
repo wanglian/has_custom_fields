@@ -1,6 +1,6 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>New Field</span></h4>
-  <%= common_error_messages(:field) %>
+  <%#= common_error_messages(:field) %>
   <form class="form" action="<%= "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage"%>" method="post" autocomplete="off" novalidate="novalidate">
     <div class="form-actions"><input type="submit" name="save" value="save" /></div>
     <fieldset class="field-group field-info">

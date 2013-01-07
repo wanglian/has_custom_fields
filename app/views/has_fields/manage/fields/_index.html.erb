@@ -1,6 +1,6 @@
 <div class="content-section fields-section" id="fieldsSection">
   <h4 class="content-section-head"><span>Fields</span></h4>
-  <%= common_error_messages(@resource.constantize.table_name.to_sym) if @resource %>
+  <%#= common_error_messages(@resource.constantize.table_name.to_sym) if @resource %>
   <div class="form">
     <ul class="field-group-index">
       <% @resources.sort.each do |resource| %>
@@ -11,7 +11,7 @@
     <div class="field-group field-<%= resource %>" id="<%= resource.camelcase %>FieldsGroup">
       <h5 class="field-group-head"><span><%= resource %></span></h5>
       <form action="/<%= @scope.pluralize %>/<%= @scope_object.id %>/fields/manage" method="get" autocomplete="off" novalidate="novalidate">
-        <%= render :partial => "/shared/list/table", :formats => [:html], :locals => {:screens => nil, :records => "#{resource.underscore}_fields", :partial => "has_fields/manage/fields", :add => {:partial => nil, :link => "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/new?kind=#{resource}"}} %>
+        <%= render :partial => "table", :formats => [:html], :locals => {:screens => nil, :records => "#{resource.underscore}_fields", :partial => "has_fields/manage/fields", :add => {:partial => nil, :link => "/#{@scope.pluralize}/#{@scope_object.id}/fields/manage/new?kind=#{resource}"}} %>
       </form>
     </div>
     <% end %>
