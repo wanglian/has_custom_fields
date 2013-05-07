@@ -56,7 +56,7 @@ module HasFields
       
       # attach the field attributes to the class - needs to be done here so that the belongs_to doesn't get overwritten each time has_lists is called
       FieldAttribute.class_eval do
-        belongs_to HasFields.config[base_class][:class_name], :foreign_key => HasFields.config[base_class][:foreign_key]
+        belongs_to HasFields.config[base_class][:class_name].underscore.to_sym, :foreign_key => HasFields.config[base_class][:foreign_key]
       end
       
     end
@@ -81,7 +81,7 @@ module HasFields
           self.table_name = HasFields.config[klass][:fields_table_name]
           has_many :field_select_options, :class_name => "::HasFields::FieldSelectOption", :dependent => :destroy
           has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :dependent => :destroy
-          belongs_to klass.underscore.to_sym
+          belongs_to HasFields.config[klass][:association_class_name].underscore.to_sym
           scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
           validates_presence_of :name
@@ -196,7 +196,7 @@ module HasFields
        :select_options_table_name => :field_select_options,
        :select_options_relationship_name => :field_select_options,
        :foreign_key => self.name.foreign_key,
-       :class_name => self.name.underscore.to_sym
+       :association_class_name => self.name
       }
     end
     
