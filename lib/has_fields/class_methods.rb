@@ -56,7 +56,7 @@ module HasFields
       
       # attach the field attributes to the class - needs to be done here so that the belongs_to doesn't get overwritten each time has_lists is called
       FieldAttribute.class_eval do
-        belongs_to HasFields.config[base_class][:class_name].underscore.to_sym, :foreign_key => HasFields.config[base_class][:foreign_key]
+        belongs_to HasFields.config[base_class][:association_class_name].underscore.to_sym, :foreign_key => HasFields.config[base_class][:foreign_key]
       end
       
     end
