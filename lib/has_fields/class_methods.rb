@@ -81,7 +81,7 @@ module HasFields
           self.table_name = HasFields.config[klass][:fields_table_name]
           has_many :field_select_options, :class_name => "::HasFields::FieldSelectOption", :dependent => :destroy
           has_many :field_attributes, :class_name => "::HasFields::FieldAttribute", :dependent => :destroy
-          belongs_to HasFields.config[klass][:association_class_name].underscore.to_sym
+          belongs_to HasFields.config[klass][:association_class_name].underscore.to_sym, class_name: klass
           scope :by_scope, lambda {|s| {:conditions => "#{s}_id IS NOT NULL"}}
           validates_presence_of :kind, :message => 'Please specify the class that this field will be added to.'
           validates_presence_of :name
